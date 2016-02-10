@@ -1,0 +1,7 @@
+{
+  "name": "flight-map-plugin",
+  "version": "0.1.0",
+  "dependencies": {
+    "angular-leaflet-directive": "0.10.0"
+  }
+}

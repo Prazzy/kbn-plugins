@@ -1,0 +1,5 @@
+<div ng-controller="FlightMapController">
+	{{ time | date:'HH:mm:ss' }}
+
+	<leaflet id="mymap" lf-center="center" geojson="paths" height="480px" width="640px"></leaflet>
+</div>
