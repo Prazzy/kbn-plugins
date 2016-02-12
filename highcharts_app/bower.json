@@ -1,0 +1,8 @@
+{
+  "name": "highcharts_app-plugin",
+  "version": "0.1.0",
+  "dependencies": {
+    "highcharts": "4.2.3",
+    "highcharts-ng": "0.0.11"
+  }
+}
