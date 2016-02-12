@@ -20,7 +20,7 @@ function FlightMapProvider(Private, config) {
 					format: 'HH:mm:ss'
 				}
 			},
-      requiresSearch: false
+      requiresSearch: true
     });
 }
 
