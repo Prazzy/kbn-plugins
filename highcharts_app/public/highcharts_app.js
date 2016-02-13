@@ -4,7 +4,6 @@ require('plugins/highcharts_app/highcharts_app_controller');
 
 function HighchartsAppProvider(Private, config) {
     var TemplateVisType = Private(require('ui/template_vis_type/TemplateVisType'));
-    var geoJsonConverter = Private(require('ui/agg_response/geo_json/geo_json'));
     var Schemas = Private(require('ui/Vis/Schemas'));
     var supports = require('ui/utils/supports');
 
@@ -17,10 +16,56 @@ function HighchartsAppProvider(Private, config) {
       params: {
 				editor: require('plugins/highcharts_app/highcharts_app_editor.html'), // Use this HTML as an options editor for this vis
 				defaults: { // Set default values for paramters (that can be configured in the editor)
-					format: 'HH:mm:ss'
-				}
+					        shareYAxis: true,
+                            addTooltip: true,
+                            addLegend: true,
+                            scale: 'linear',
+                            mode: 'stacked',
+                            times: [],
+                            addTimeMarker: false,
+                            defaultYExtents: false,
+                            setYExtents: false,
+                            yAxis: {}
+				},
+                scales: ['linear', 'log', 'square root'],
+                modes: ['stacked', 'percentage', 'grouped']
 			},
-      requiresSearch: false
+      schemas: new Schemas([
+          {
+            group: 'metrics',
+            name: 'metric',
+            title: 'Y-Axis',
+            min: 1,
+            aggFilter: '!std_dev',
+            defaults: [
+              { schema: 'metric', type: 'count' }
+            ]
+          },
+          {
+            group: 'buckets',
+            name: 'segment',
+            title: 'X-Axis',
+            min: 0,
+            max: 1,
+            aggFilter: '!geohash_grid'
+          },
+          {
+            group: 'buckets',
+            name: 'group',
+            title: 'Split Bars',
+            min: 0,
+            max: 1,
+            aggFilter: '!geohash_grid'
+          },
+          {
+            group: 'buckets',
+            name: 'split',
+            title: 'Split Chart',
+            min: 0,
+            max: 1,
+            aggFilter: '!geohash_grid'
+          }
+        ])
     });
 }
 
