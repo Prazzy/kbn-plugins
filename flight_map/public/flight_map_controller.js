@@ -16,14 +16,40 @@ define(function(require) {
     });
 
 	// Add a controller to this module
-	module.controller('FlightMapController', function($scope, Private) {
+	module.controller('FlightMapController', function($scope, $element, $rootScope, Private) {
         var SearchSource = Private(require('ui/courier/data_source/search_source'));
+
+        var _updateDimensions = function () {
+          $scope.options = {width: 400};
+          $scope.options = {height:400};
+          //var delta = 18;
+          //var width = $element.parent().width();
+          //var height = $element.parent().height();
+          //console.log(height);
+          //if (width) {
+          //  if (width > delta) {
+          //    width -= delta;
+          //  }
+          //  $scope.width = width;
+          //}
+          //if (height) {
+          //  if (height > delta) {
+          //    height -= delta;
+          //  }
+          //  if (height > 1) $scope.height = height;
+          //}
+        };
+
+        //var off = $rootScope.$on('change:vis', function () {
+        //    _updateDimensions();
+        //});
+        //$scope.$on('$destroy', off);
 
 		_.extend($scope, {
                 center: {
                     lat: 48,
                     lng: 4,
-                    zoom: 4
+                    zoom: 2
                 },
                 defaults: {
                     tileLayer: "https://otile1-s.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg",
@@ -36,7 +62,7 @@ define(function(require) {
                 },
             markers: {},
             paths: {}
-            });
+        });
 
         $scope.$watch('esResponse', function(resp) {
             var mapSearchSource = new SearchSource();
@@ -45,6 +71,14 @@ define(function(require) {
             mapSearchSource.onResults().then(function onResults(searchResp) {
                 console.log(searchResp);
 
+                //_.each($scope.paths, function(path, i) {
+                //   m.removeLayer(m._layers[i]);
+                //});
+
+                $scope.paths = {};
+                $scope.markers = {};
+
+                //_updateDimensions();
                 _.each(searchResp.hits.hits, function(hit, i){
                     var es_src = hit['_source']
                     var map_json_data = $.parseJSON(es_src.data);
@@ -53,7 +87,7 @@ define(function(require) {
                             $scope.markers['sm'+i] = {lat: marker.latitude,
                                                     lng: marker.longitude,
                                                     message: marker.content,
-                                                    focus: true,
+                                                    focus: false,
                                                     draggable: false
                                                 }
                     });
@@ -63,7 +97,7 @@ define(function(require) {
                             $scope.markers['dm'+i] = {lat: marker.latitude,
                                                     lng: marker.longitude,
                                                     message: marker.content,
-                                                    focus: true,
+                                                    focus: false,
                                                     draggable: false
                                                 }
                     });
@@ -74,7 +108,7 @@ define(function(require) {
                             $scope.markers['om'+i] = {lat: marker.latitude,
                                                     lng: marker.longitude,
                                                     message: marker.content,
-                                                    focus: true,
+                                                    focus: false,
                                                     draggable: false
                                                 }
                     });
@@ -83,7 +117,7 @@ define(function(require) {
                     $scope.markers['fm'] = {lat: map_json_data.markers[0].latitude,
                                             lng: map_json_data.markers[0].longitude,
                                             message: map_json_data.markers[0].content,
-                                            focus: true,
+                                            focus: false,
                                             draggable: false
                                         };
 
@@ -91,7 +125,7 @@ define(function(require) {
                     $scope.markers['lm'] = {lat: last_marker.latitude,
                                             lng: last_marker.longitude,
                                             message: last_marker.content,
-                                            focus: true,
+                                            focus: false,
                                             draggable: false
                                         };
 
@@ -102,6 +136,7 @@ define(function(require) {
                             opacity: polyline.opacity, latlngs: polyline.marker
                         };
                     });
+
                 });
             });
             mapSearchSource.fetchQueued();

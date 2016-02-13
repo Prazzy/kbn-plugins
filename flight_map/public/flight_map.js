@@ -1,6 +1,6 @@
 // Include the angular controller
+require('plugins/flight_map/flight_map.css');
 require('plugins/flight_map/flight_map_controller');
-//require('plugins/tr-k4p-tagcloud/tagcloud.css');
 
 function FlightMapProvider(Private, config) {
     var TemplateVisType = Private(require('ui/template_vis_type/TemplateVisType'));
