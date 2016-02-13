@@ -17,7 +17,7 @@ function FlightMapProvider(Private, config) {
       params: {
 				editor: require('plugins/flight_map/flight_map_editor.html'), // Use this HTML as an options editor for this vis
 				defaults: { // Set default values for paramters (that can be configured in the editor)
-					format: 'HH:mm:ss'
+					handleNoResults: true
 				}
 			},
       requiresSearch: true
