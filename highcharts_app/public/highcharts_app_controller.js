@@ -12,8 +12,22 @@ define(function(require) {
 	//require('highcharts/modules/exporting')(Highcharts);
 
 	// Add a controller to this module
-	module.controller('HighchartsAppController', function($scope, Private) {
+	module.controller('HighchartsAppController', function($scope, $element, $rootScope, Private) {
 		var filterManager = Private(require('ui/filter_manager'));
+
+		$scope.filter = function(item) {
+			// Add a new filter via the filter manager
+			filterManager.add(
+				// The field to filter for, we can get it from the config
+				$scope.vis.aggs.bySchemaName['segment'][0].params.field,
+				// The value to filter for, we will read out the bucket key from the tag
+				item,
+				// Whether the filter is negated. If you want to create a negated filter pass '-' here
+				null,
+				// The index pattern for the filter
+				$scope.vis.indexPattern.title
+			);
+		};
 
 		$scope.highchartsNG = {
 			options: {
@@ -21,92 +35,75 @@ define(function(require) {
 					type: 'column'
 				}
 			},
-			series: [],
+			//series: [],
 			title: {
 				text: 'Highchart Column Chart'
 			},
 			loading: false
 		};
 
-		$scope.$watch('esResponse', function(resp) {
 
-		//function addPoints() {
-		//	var seriesArray = $scope.highchartsNG.series
-		//	var rndIdx = Math.floor(Math.random() * seriesArray.length);
-		//	seriesArray[rndIdx].data = seriesArray[rndIdx].data.concat([1, 10, 20])
-		//}
+		var _updateDimensions = function () {
+		  var delta = 18;
+		  var width = $element.parent().width();
+		  var height = $element.parent().height();
+		  $scope.highchartsNG.size = {width: width, height: height}
+		  if (width) {
+			if (width > delta) {
+			  width -= delta;
+			}
+			$scope.highchartsNG.size.width = width;
+		  }
+		  if (height) {
+			if (height > delta) {
+			  height -= delta;
+			}
+			if (height > 1) $scope.highchartsNG.size.height = height;
+		  }
+		};
+
+		//var off = $rootScope.$on('change:vis', function () {
+		//  _updateDimensions();
+		//});
+		//$scope.$on('$destroy', off);
         //
-		//function addSeries() {
-		//	var rnd = [];
-		//	for (var i = 0; i < 10; i++) {
-		//		rnd.push(Math.floor(Math.random() * 20) + 1)
-		//	}
-		//	$scope.highchartsNG.series.push({
-		//		data: rnd
-		//	})
-		//}
-        //
-        //$scope.highchartsNG = {
-			//options: {
-			//	chart: {
-			//		type: 'column'
-			//	}
-			//},
-			//series: [{
-			//		name: 'Tokyo',
-			//		data: [49.9]
-        //
-			//	}, {
-			//		name: 'New York',
-			//		data: [83.6]
-        //
-			//	}, {
-			//		name: 'London',
-			//		data: [48.9]
-        //
-			//	}, {
-			//		name: 'Berlin',
-			//		data: [42.4]
-        //
-			//	}],
-			//title: {
-			//	text: 'Highchart Column Chart'
-			//},
-			//loading: false
-        //};
+        //$scope.$watch('vis', function () {
+			//_updateDimensions();
+        //});
+
+		//$scope.$on('change:vis', function () {
+		//	_updateDimensions();
+		//});
+
+		$scope.$watch('esResponse', function(resp) {
+		//_updateDimensions();
 
 		if (!resp) {
-    		//$scope.highchartsNG.series.push({data: [10, 15, 12, 8, 7]});
     		return;
   		}
 
-		debugger;
 		// Retrieve the id of the configured aggregation
   		var aggId = $scope.vis.aggs.bySchemaName['segment'][0].id;
 		// Retrieve the metrics aggregation configured
 		var metricsAgg = $scope.vis.aggs.bySchemaName['metric'][0];
 		// Get the buckets of that aggregation
   		var buckets = resp.aggregations[aggId].buckets;
-  		// Transform all buckets into objects
-  		//var results = buckets.map(function(bucket) {
-			//return {
-			//  name: bucket.key,
-			//  data: [bucket.doc_count]
-			//};
-        //});
-		//$scope.highchartsNG.series.push(results);
-		$scope.highchartsNG.series = [];
-        _.each(buckets, function(bucket, i){
-			// Use the getValue function of the aggregation to get the value of a bucket
-			var value = metricsAgg.getValue(bucket);
-			$scope.highchartsNG.series.push({
-							name: bucket.key,
-							data: [value]
-							});
-        });
-		//debugger;
+		var categories = [];
+		var results = buckets.map(function(bucket) {
 
-		//addSeries();
+				// Use the getValue function of the aggregation to get the value of a bucket
+				var value = metricsAgg.getValue(bucket);
+				categories.push(bucket.key);
+				return [bucket.key, value];
+
+			});
+			$scope.highchartsNG.xAxis = {categories: categories};
+ 			$scope.highchartsNG.series = [{data: results, events: {
+						click: function click(e) {
+							$scope.filter(e.point.name);
+						}
+					}}];
+
 		});
 
     });

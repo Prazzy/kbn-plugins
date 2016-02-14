@@ -1,6 +1,6 @@
 // Include the angular controller
+require('plugins/highcharts_app/highcharts_app.css');
 require('plugins/highcharts_app/highcharts_app_controller');
-//require('plugins/tr-k4p-tagcloud/tagcloud.css');
 
 function HighchartsAppProvider(Private, config) {
     var TemplateVisType = Private(require('ui/template_vis_type/TemplateVisType'));
