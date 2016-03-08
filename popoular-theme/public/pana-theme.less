@@ -1,0 +1,75 @@
+@import (reference) "~ui/styles/mixins";
+@import (reference) "~ui/styles/variables";
+
+//@navbar-default-color:                  @gray-base;
+//@navbar-default-link-color:             @gray-base;
+//@navbar-default-link-hover-color:       @white;
+//@navbar-default-link-active-color:      @white;
+//@navbar-default-link-active-bg:         lightblue;
+//@navbar-default-bg:                       @white;
+
+body {
+  background-color: #F8F8F8;
+}
+
+.tab-dashboard {
+  background-color: #F8F8F8;
+}
+
+@media (min-width: @screen-md-min) {
+  .navbar-fixed-top .navbar-collapse,
+  .navbar-static-top .navbar-collapse,
+  .navbar-fixed-bottom .navbar-collapse {
+    padding-left: 0;
+    padding-right: 15px;
+  }
+
+  .navbar-inverse .navbar-nav > .active > a,
+  .navbar-inverse .navbar-nav > .active > a:hover,
+  .navbar-inverse .navbar-nav > .active > a:focus {
+    color: #ffffff;
+    background-color: #6baed6;
+  }
+}
+
+.navbar-nav {
+  font-size: 14px;
+  font-size: medium;
+}
+
+.gridster {
+  background-color: transparent;
+}
+
+.panel {
+  border-radius: 3px;
+}
+
+.panel-default {
+  border-color: #C4D0DC;
+}
+
+.panel-default > .panel-heading {
+  color: #7b8a8b;
+  background-color: #f5f5f5;
+  border-color: #FF8000;
+}
+
+.gridster dashboard-panel .panel .panel-heading {
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+
+.panel-heading {
+  border-bottom: 1px solid #FF8000;
+}
+
+.panel-title {
+  color: #08519C;
+  font-weight: bold;
+}
+
+filter-bar .bar .filter {
+  background-color: #08519c;
+  border-radius: 3px;
+}
