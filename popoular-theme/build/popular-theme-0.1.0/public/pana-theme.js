@@ -3,12 +3,7 @@
  */
 
 import chrome from 'ui/chrome';
+import kibanaLogoUrl from 'plugins/popular-theme/images/PanasonicLogo.png';
 
 chrome
-.setNavBackground('red')
-.setTabs([
-  {
-    id: 'dashboard',
-    title: 'Dashboard'
-  }
-]);
+.setNavBackground('#08519c');
