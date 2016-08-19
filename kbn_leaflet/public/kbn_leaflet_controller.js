@@ -7,12 +7,6 @@ define(function(require) {
     var L = require('leaflet');
     require('./bower_components/leaflet_js/leaflet.markercluster');
     require('./bower_components/leaflet_js//MarkerCluster.Default.css');
-    //require('./bower_components/Cesium');
-    //require('./bower_components/Cesium/Widgets/widgets.css');
-    //require('./bower_components/cesium/Source/Widgets/widgets.css');
-    //var BuildModuleUrl = require('./bower_components/cesium/Source/Core/buildModuleUrl');
-    //BuildModuleUrl.setBaseUrl('./');
-    //var Viewer = require('./bower_components/cesium/Source/Widgets/Viewer/Viewer');
 
 	var module = require('ui/modules').get('kbn_leaflet', ['kibana']);
 
@@ -20,7 +14,7 @@ define(function(require) {
 	module.controller('KbnLeafletController', function($scope, $element, $rootScope, config, Private) {
         var filterManager = Private(require('ui/filter_manager'));
         var SearchSource = Private(require('ui/courier/data_source/search_source'));
-        $('img.leaflet-tile-loaded').addClass('filters-off');
+
 		$scope.filter = function(item) {
 			// Add a new filter via the filter manager
 			filterManager.add(
@@ -72,7 +66,8 @@ define(function(require) {
           //markers.addLayer(marker);
           //map.addLayer(markers);
 //            delete $scope.map1;
-
+            var lat = $scope.vis.params.lat;
+            var lng = $scope.vis.params.lng;
 
             var mapSearchSource = new SearchSource();
             mapSearchSource.size(200);
@@ -101,10 +96,10 @@ define(function(require) {
                 var markerList = [];
                  _.each(searchResp.hits.hits, function(hit, i){
                     var es_data = hit['_source'];
-                    var marker = L.marker(new L.LatLng(es_data['latitude'],es_data['longitude']), {
-                            title: es_data['latitude'] + "," + es_data['longitude']
+                    var marker = L.marker(new L.LatLng(es_data[lat],es_data[lng]), {
+                            title: es_data[lat] + "," + es_data[lng]
                         });
-                    marker.bindPopup(es_data['latitude'] + "," + es_data['longitude'] + "popup");
+                    marker.bindPopup(es_data[lat] + "," + es_data[lng] + "popup");
                     markerList.push(marker);
                  });
 
@@ -114,7 +109,6 @@ define(function(require) {
             });
             mapSearchSource.fetchQueued();
 
-          $('img.leaflet-tile-loaded').addClass('filters-off');
         });
 
         _updateDimensions();
