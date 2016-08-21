@@ -99,7 +99,8 @@ define(function(require) {
                     var marker = L.marker(new L.LatLng(es_data[lat],es_data[lng]), {
                             title: es_data[lat] + "," + es_data[lng]
                         });
-                    marker.bindPopup(es_data[lat] + "," + es_data[lng] + "popup");
+                    var popup = "asdasdasdasdas<br/>sadasdasdasdasdasdsadasdasdasasd<br/>";
+                    marker.bindPopup(popup + es_data[lat] + "," + es_data[lng] + "popup", {'minWidth': '200','maxWidth': '200'});
                     markerList.push(marker);
                  });
 
