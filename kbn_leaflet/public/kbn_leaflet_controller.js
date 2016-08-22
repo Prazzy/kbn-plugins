@@ -74,10 +74,9 @@ define(function (require) {
             var lng = $scope.vis.params.lng;
 
             var mapSearchSource = new SearchSource();
-            mapSearchSource.size(200);
+            mapSearchSource.size(20);
             mapSearchSource.index($scope.vis.indexPattern);
             mapSearchSource.onResults().then(function onResults(searchResp) {
-                //var map_container = $('map_container1').get(0);
                 if (typeof $scope.map1 === 'undefined') {
                     $scope.map1 = new L.map("map_container1", {
                         scrollWheelZoom: true,
@@ -97,22 +96,100 @@ define(function (require) {
                 L.tileLayer.wms(this.wms.url, this.wms.options).addTo(map1);
                 var markers = new L.MarkerClusterGroup({maxClusterRadius: 100});
 
-                var markerList = [];
-                _.each(searchResp.hits.hits, function (hit, i) {
-                    var es_data = hit['_source'];
-                    var marker = L.marker(new L.LatLng(es_data[lat], es_data[lng]), {
-                        title: es_data[lat] + "," + es_data[lng]
-                    });
-                    marker.bindPopup(es_data[lat] + "," + es_data[lng] + "popup", {
-                        'minWidth': '200',
-                        'maxWidth': '200'
-                    });
-                    markerList.push(marker);
+                //var markerList = [];
+                //_.each(searchResp.hits.hits, function (hit, i) {
+                //    var es_data = hit['_source'];
+                //    var marker = L.marker(new L.LatLng(es_data[lat], es_data[lng]), {
+                //        title: es_data[lat] + "," + es_data[lng]
+                //    });
+                //    marker.bindPopup(es_data[lat] + "," + es_data[lng] + "popup", {
+                //        'minWidth': '200',
+                //        'maxWidth': '200'
+                //    });
+                //    markerList.push(marker);
+                //});
+                //
+                //markers.addLayers(markerList);
+                //markers.addTo(map1);
+                //map1.fitBounds([[-90, -220], [90, 220]]);
+
+                $scope.paths = {};
+                $scope.markers = {};
+                var tealIcon = L.icon({
+                    iconUrl: '../plugins/kbn_leaflet/images/teal-dot.png',
+                    iconAnchor: [10, 30]
                 });
 
-                markers.addLayers(markerList);
-                markers.addTo(map1);
-                map1.fitBounds([[-90, -220], [90, 220]]);
+                var orangeIcon = L.icon({
+                    iconUrl: '../plugins/kbn_leaflet/images/orange-dot.png',
+                    iconAnchor: [10, 30]
+                });
+
+                var yellowIcon = L.icon({
+                    iconUrl: '../plugins/kbn_leaflet/images/yellow-dot.png',
+                    iconAnchor: [10, 30]
+                });
+
+                var greenIcon = L.icon({
+                    iconUrl: '../plugins/kbn_leaflet/images/green-dot.png',
+                    iconAnchor: [10, 30]
+                });
+
+                var redIcon = L.icon({
+                    iconUrl: '../plugins/kbn_leaflet/images/red-dot.png',
+                    iconAnchor: [10, 30]
+                });
+
+                _.each(searchResp.hits.hits, function (hit, i) {
+                    var es_src = hit['_source'];
+                    var map_json_data = $.parseJSON(es_src.data);
+                    // switch markers
+                    _.each(map_json_data.switchmarkers, function (marker_i, i) {
+                        var tooltip_content = marker_i.content;
+                        var switchMarker = L.marker([marker_i.latitude, marker_i.longitude], {icon: tealIcon}).addTo(map1);
+                        switchMarker.bindPopup(tooltip_content, {'minWidth': '200', 'maxWidth': '200'});
+                        //switchMarkers.push(switchMarker);
+                    });
+
+                    // down markers
+                    _.each(map_json_data.downmarkers, function (marker_i, i) {
+                        var tooltip_content = marker_i.content;
+                        var offlineMarker = L.marker([marker_i.latitude, marker_i.longitude], {icon: orangeIcon}).addTo(map1);
+                        offlineMarker.bindPopup(tooltip_content, {'minWidth': '200', 'maxWidth': '200'});
+                        //switchMarkers.push(switchMarker);
+                    });
+
+                    // online markers
+                    _.each(map_json_data.offtoonmarkers, function (marker_i, i) {
+                        var tooltip_content = marker_i.content;
+                        var onlineMarker = L.marker([marker_i.latitude, marker_i.longitude], {icon: yellowIcon}).addTo(map1);
+                        onlineMarker.bindPopup(tooltip_content, {'minWidth': '200', 'maxWidth': '200'});
+                        //switchMarkers.push(switchMarker);
+                    });
+
+                    // first marker
+		            var firstMarker = L.marker([map_json_data.markers[0].latitude,map_json_data.markers[0].longitude],{icon: greenIcon}).addTo(map1);
+                    var tooltip_content = map_json_data.markers[0].content;
+           	        firstMarker.bindPopup(tooltip_content,{'minWidth': '200','maxWidth': '200'});
+                    //firstMarkers.push(firstMarker);
+
+                    // last marker
+		            var lastMarker = L.marker([map_json_data.markers[map_json_data.markers.length - 1].latitude,map_json_data.markers[map_json_data.markers.length - 1].longitude],{icon: redIcon}).addTo(map1);
+		            var tooltip_content = map_json_data.markers[map_json_data.markers.length - 1].content;
+    	 	        lastMarker.bindPopup(tooltip_content,{'minWidth': '200','maxWidth': '200'});
+                    //lastMarkers.push(lastMarker);
+
+                    // polylines
+                    _.each(map_json_data.polylines, function (polyline, i) {
+                        L.polyline(polyline.marker, {
+                            color: polyline.color,
+                            opacity: polyline.opacity,
+                            weight: polyline.weight
+                        }).addTo(map1);
+                        //poly_list.push(line);
+                    });
+                    map1.fitBounds([[-90, -220], [90, 220]]);
+                });
             });
             mapSearchSource.fetchQueued();
 
