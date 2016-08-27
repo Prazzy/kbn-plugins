@@ -18,18 +18,16 @@ define(function (require) {
         var tabifyAggResponse = Private(require('ui/agg_response/tabify/tabify'));
         var filterManager = Private(require('ui/filter_manager'));
 
-        $scope.filter = function (item) {
-            // Add a new filter via the filter manager
-            filterManager.add(
-                // The field to filter for, we can get it from the config
-                $scope.vis.aggs.bySchemaName['segment'][0].params.field,
-                // The value to filter for, we will read out the bucket key from the tag
-                item,
-                // Whether the filter is negated. If you want to create a negated filter pass '-' here
-                null,
-                // The index pattern for the filter
-                $scope.vis.indexPattern.title
-            );
+        $scope.filter = function (item, type) {
+            if (type === 'x_label') {
+                filterManager.add($scope.vis.aggs.bySchemaName['columns'][0].params.field, item, null,
+                    $scope.vis.indexPattern.title
+                );
+            } else if (type === 'y_label') {
+                filterManager.add($scope.vis.aggs.bySchemaName['rows'][0].params.field, item, null,
+                    $scope.vis.indexPattern.title
+                );
+            }
         };
 
         var _updateDimensions = function () {
@@ -192,13 +190,13 @@ define(function (require) {
             //var cells = processTableGroups(tabifyAggResponse($scope.vis, resp), $scope);
             var x_categories = _.uniq(_.map(cells, 'x_label'));
             var y_categories = _.uniq(_.map(cells, 'y_label'));
-            $scope.hc_options = {
+            var hc_options = {
                 chart: {
                     renderTo: 'container',
                     type: 'heatmap',
                     marginTop: 20,
                     marginBottom: 20,
-                    plotBorderWidth: 1
+                    plotBorderWidth: 2
                 },
                 xAxis: {
                     categories: x_categories
@@ -224,6 +222,18 @@ define(function (require) {
                         return '<b>' + this.series.xAxis.categories[this.point.x] + this.point.value + this.series.yAxis.categories[this.point.y] + '</b>';
                     }
                 },
+                plotOptions: {
+                    series: {
+                        events: {
+                            click: function (event) {
+                                var str = event.point.series.yAxis.categories[event.point.y] + ',' +
+                                    event.point.series.xAxis.categories[event.point.x];
+                                $scope.filter(event.point.x_label, 'x_label');
+                                $scope.filter(event.point.y_label, 'y_label');
+                            }
+                        }
+                    }
+                },
                 series: [{
                     name: 'heatmap',
                     borderWidth: 1,
@@ -237,9 +247,14 @@ define(function (require) {
 
             };
 
-            //debugger;
+            if (typeof $scope.vis.params.hc_options == 'string' && $scope.vis.params.hc_options.trim().length > 0) {
+                var additional_options = JSON.parse(JSON.stringify(eval("(" + $scope.vis.params.hc_options + ")")));
+                hc_options = _.merge(hc_options, additional_options);
+            }
+
+            $scope.chart = new Highcharts.Chart(hc_options);
             // var additional_options = JSON.parse(JSON.stringify(eval("(" + $scope.vis.params.hc_options + ")")));
-            $scope.chart = new Highcharts.Chart($scope.hc_options);
+            //$scope.chart = new Highcharts.Chart($scope.hc_options);
             //var additional_options = JSON.parse(JSON.stringify(eval("(" + $scope.vis.params.hc_options + ")")));
             //$scope.chart = new Highcharts.Chart(_.merge($scope.hc_options, additional_options));
             _updateDimensions();
