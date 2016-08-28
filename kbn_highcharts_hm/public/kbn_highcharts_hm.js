@@ -11,13 +11,14 @@ function KbnHighchartsHmProvider(Private, config) {
     // Vis object of this type.
     return new TemplateVisType({
         name: 'kbn_highcharts_hm',
-        title: 'Highcharts Heatmap',
+        title: 'Highcharts Heatmap Chart',
         icon: 'fa fa-bars',
         description: 'Highcharts Heatmap',
         template: require('plugins/kbn_highcharts_hm/kbn_highcharts_hm.html'),
         params: {
             editor: require('plugins/kbn_highcharts_hm/kbn_highcharts_hm_editor.html'), // Use this HTML as an options editor for this vis
             defaults: { // Set default values for paramters (that can be configured in the editor)
+                hc_options: `{}`
             }
         },
         schemas: new Schemas([

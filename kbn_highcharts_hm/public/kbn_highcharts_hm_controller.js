@@ -139,6 +139,8 @@ define(function (require) {
             var columnAggId = _.first(_.pluck($scope.vis.aggs.bySchemaName['columns'], 'id'));
             var rowAggId = _.first(_.pluck($scope.vis.aggs.bySchemaName['rows'], 'id'));
             var metricsAggId = _.first(_.pluck($scope.vis.aggs.bySchemaName['metric'], 'id'));
+            var colLabel = $scope.vis.aggs.bySchemaName['columns'][0]._opts.params.customLabel;
+            var rowLabel = $scope.vis.aggs.bySchemaName['rows'][0]._opts.params.customLabel;
             //var dataLabels = {[columnAggId]: 'x', [rowAggId]: 'y', [metricsAggId]: 'value'};
             // Retrieve the id of the configured aggregation
             //var aggId = $scope.vis.aggs.bySchemaName['segment'][0].id;
@@ -195,14 +197,28 @@ define(function (require) {
                     renderTo: 'container',
                     type: 'heatmap',
                     marginTop: 20,
-                    marginBottom: 20,
-                    plotBorderWidth: 2
+                    marginBottom: 40,
+                    plotBorderWidth: 1
+                },
+                title: {
+                    "text": ""
+                },
+                credits: {
+                    enabled: false
                 },
                 xAxis: {
-                    categories: x_categories
+                    categories: x_categories,
+                    title: {
+                        enabled: true,
+                        text: colLabel
+                    }
                 },
                 yAxis: {
-                    categories: y_categories
+                    categories: y_categories,
+                    title: {
+                        enabled: true,
+                        text: rowLabel
+                    }
                 },
                 colorAxis: {
                     min: 0,
@@ -219,15 +235,16 @@ define(function (require) {
                 },
                 tooltip: {
                     formatter: function () {
-                        return '<b>' + this.series.xAxis.categories[this.point.x] + this.point.value + this.series.yAxis.categories[this.point.y] + '</b>';
+                        return colLabel + ': <b>' + this.series.xAxis.categories[this.point.x] + '</b><br/>' +
+                            rowLabel + ': <b>' + this.series.yAxis.categories[this.point.y] + '</b><br/>' +
+                            'Value: <b>' + this.point.value + '</b>';
                     }
                 },
                 plotOptions: {
                     series: {
+                        cursor: 'pointer',
                         events: {
                             click: function (event) {
-                                var str = event.point.series.yAxis.categories[event.point.y] + ',' +
-                                    event.point.series.xAxis.categories[event.point.x];
                                 $scope.filter(event.point.x_label, 'x_label');
                                 $scope.filter(event.point.y_label, 'y_label');
                             }
@@ -248,15 +265,12 @@ define(function (require) {
             };
 
             if (typeof $scope.vis.params.hc_options == 'string' && $scope.vis.params.hc_options.trim().length > 0) {
-                var additional_options = JSON.parse(JSON.stringify(eval("(" + $scope.vis.params.hc_options + ")")));
+                var additional_options = JSON.parse($scope.vis.params.hc_options);
                 hc_options = _.merge(hc_options, additional_options);
             }
 
             $scope.chart = new Highcharts.Chart(hc_options);
-            // var additional_options = JSON.parse(JSON.stringify(eval("(" + $scope.vis.params.hc_options + ")")));
-            //$scope.chart = new Highcharts.Chart($scope.hc_options);
-            //var additional_options = JSON.parse(JSON.stringify(eval("(" + $scope.vis.params.hc_options + ")")));
-            //$scope.chart = new Highcharts.Chart(_.merge($scope.hc_options, additional_options));
+
             _updateDimensions();
 
         });
