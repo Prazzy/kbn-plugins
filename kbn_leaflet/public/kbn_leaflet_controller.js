@@ -99,22 +99,22 @@ define(function (require) {
                 var map1 = $scope.map1;
                 L.Icon.Default.imagePath = '../plugins/kbn_leaflet/images';
 
-                (function () {
-                    var control = new L.Control({position: 'topright'});
-                    control.onAdd = function (map1) {
-                        var azoom = L.DomUtil.create('a', 'resetzoom');
-                        azoom.innerHTML = "[Reset Zoom]";
-                        L.DomEvent
-                            .disableClickPropagation(azoom)
-                            .addListener(azoom, 'click', function () {
-                                map1.fitBounds([[-90, -220], [90, 220]])
-                                //map1.setView(map1.options.center, map1.options.zoom);
-                            }, azoom);
-                        return azoom;
-                    };
-                    return control;
-                }())
-                    .addTo(map1);
+                //(function () {
+                //    var control = new L.Control({position: 'topright'});
+                //    control.onAdd = function (map1) {
+                //        var azoom = L.DomUtil.create('a', 'resetzoom');
+                //        azoom.innerHTML = "[Reset Zoom]";
+                //        L.DomEvent
+                //            .disableClickPropagation(azoom)
+                //            .addListener(azoom, 'click', function () {
+                //                map1.fitBounds([[-90, -220], [90, 220]])
+                //                //map1.setView(map1.options.center, map1.options.zoom);
+                //            }, azoom);
+                //        return azoom;
+                //    };
+                //    return control;
+                //}())
+                //    .addTo(map1);
 
                 // This could be made configurable?
                 this.wms = config.get('visualization:tileMap:WMSdefaults');

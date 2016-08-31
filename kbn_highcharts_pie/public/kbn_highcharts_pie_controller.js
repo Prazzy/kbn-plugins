@@ -8,7 +8,7 @@ define(function (require) {
     var module = require('ui/modules').get('kbn_highcharts', ['kibana']);
 
     // Add a controller to this module
-    module.controller('KbnHighchartsController', function ($scope, $element, $rootScope, Private) {
+    module.controller('KbnHighchartsPieController', function ($scope, $element, $rootScope, Private) {
         var filterManager = Private(require('ui/filter_manager'));
 
         $scope.filter = function (item) {

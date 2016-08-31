@@ -139,14 +139,11 @@ define(function (require) {
             var columnAggId = _.first(_.pluck($scope.vis.aggs.bySchemaName['columns'], 'id'));
             var rowAggId = _.first(_.pluck($scope.vis.aggs.bySchemaName['rows'], 'id'));
             var metricsAggId = _.first(_.pluck($scope.vis.aggs.bySchemaName['metric'], 'id'));
-            var colLabel = $scope.vis.aggs.bySchemaName['columns'][0]._opts.params.customLabel;
-            var rowLabel = $scope.vis.aggs.bySchemaName['rows'][0]._opts.params.customLabel;
-            //var dataLabels = {[columnAggId]: 'x', [rowAggId]: 'y', [metricsAggId]: 'value'};
-            // Retrieve the id of the configured aggregation
-            //var aggId = $scope.vis.aggs.bySchemaName['segment'][0].id;
-            // Retrieve the metrics aggregation configured
+            var colLabel = '';
+            if ($scope.vis.aggs.bySchemaName['columns']) colLabel = $scope.vis.aggs.bySchemaName['columns'][0]._opts.params.customLabel;
+            var rowLabel = '';
+            if ($scope.vis.aggs.bySchemaName['rows']) rowLabel = $scope.vis.aggs.bySchemaName['rows'][0]._opts.params.customLabel;
             var metricsAgg = $scope.vis.aggs.bySchemaName['metric'][0];
-            // Get the buckets of that aggregation
             var buckets = resp.aggregations[columnAggId].buckets;
             var categories = [];
             var cells = [];
@@ -173,23 +170,6 @@ define(function (require) {
                 }
             });
 
-            //var cnt = 0;
-            //var results = buckets.map(function (bucket) {
-            //
-            //    // Use the getValue function of the aggregation to get the value of a bucket
-            //    var value = metricsAgg.getValue(bucket);
-            //    categories.push(bucket.key);
-            //
-            //    //return {name: bucket.key,
-            //    cells.push([cnt, 0, value]);
-            //    //       y: value}
-            //    cnt += 1;
-            //    return [bucket.key, value];
-            //
-            //});
-            //console.log(results);
-
-            //var cells = processTableGroups(tabifyAggResponse($scope.vis, resp), $scope);
             var x_categories = _.uniq(_.map(cells, 'x_label'));
             var y_categories = _.uniq(_.map(cells, 'y_label'));
             var hc_options = {
@@ -197,7 +177,7 @@ define(function (require) {
                     renderTo: 'container',
                     type: 'heatmap',
                     marginTop: 20,
-                    marginBottom: 40,
+                    marginBottom: 60,
                     plotBorderWidth: 1
                 },
                 title: {

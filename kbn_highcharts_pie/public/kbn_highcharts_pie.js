@@ -20,26 +20,27 @@ function KbnHighchartsProvider(Private, config) {
             defaults: { // Set default values for paramters (that can be configured in the editor)
                 shareYAxis: true,
                 hc_options: `{
-                              "title": {
-                                "text": ""
-                              },
-                              "tooltip": {
-                                "pointFormat": "{point.percentage:.1f}%</b>"
-                              },
-                              "plotOptions": {
-                                "pie": {
-                                  "allowPointSelect": "true",
-                                  "cursor": "pointer",
-                                  "dataLabels": {
-                                    "enabled": "true",
-                                    "format": "<b>{point.name}</b>: {point.percentage:.1f} %",
-                                    "style": {
-                                      "color": "black"
-                                    }
-                                  }
-                                }
-                              },
-                            }`
+              "title": {
+                "text": ""
+              },
+              "tooltip": {
+                "pointFormat": "<b>{point.percentage:.1f}%</b><br><b>{point.y:.0f}</b>"
+              },
+              "plotOptions": {
+                "pie": {
+                  "allowPointSelect": "true",
+                  "cursor": "pointer",
+                  "dataLabels": {
+                    "enabled": "true",
+                    "format": "<b>{point.name}</b>: {point.percentage:.1f} %",
+                    "style": {
+                      "color": "black"
+                    }
+                  },
+                "showInLegend": "true"
+                }
+              }
+            }`
             }
         },
         hierarchicalData: true,
