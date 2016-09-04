@@ -174,7 +174,7 @@ define(function (require) {
             var y_categories = _.uniq(_.map(cells, 'y_label'));
             var hc_options = {
                 chart: {
-                    renderTo: 'container',
+                    renderTo: 'highcharts_hm_' + $scope.$id,
                     type: 'heatmap',
                     marginTop: 20,
                     marginBottom: 60,

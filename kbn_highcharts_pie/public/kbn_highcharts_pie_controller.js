@@ -84,7 +84,7 @@ define(function (require) {
 
             var hc_options = {
                 chart: {
-                    renderTo: 'container',
+                    renderTo: 'highcharts_pie_' + $scope.$id,
                     plotBackgroundColor: null,
                     plotBorderWidth: null,
                     plotShadow: false
