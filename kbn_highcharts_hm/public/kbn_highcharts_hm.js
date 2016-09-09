@@ -18,6 +18,7 @@ function KbnHighchartsHmProvider(Private, config) {
         params: {
             editor: require('plugins/kbn_highcharts_hm/kbn_highcharts_hm_editor.html'), // Use this HTML as an options editor for this vis
             defaults: { // Set default values for paramters (that can be configured in the editor)
+                dataLabel: true,
                 hc_options: `{"chart": {
                     "marginTop": "20",
                     "marginBottom": "60"

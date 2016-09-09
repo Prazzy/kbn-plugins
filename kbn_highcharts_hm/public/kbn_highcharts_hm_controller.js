@@ -131,6 +131,23 @@ define(function (require) {
             return cells;
         }
 
+        function orderBy(arr, type, order) {
+            if (type === 'number') {
+                arr = _.sortBy(_.map(arr, function (i) {
+                    return parseInt(i);
+                }));
+                if (order === 'desc') arr.reverse();
+                arr = _.map(arr, function (i) {
+                    return i.toString();
+                });
+                return arr;
+            } else {
+                arr = _.sortBy(arr);
+                if (order === 'desc') return arr.reverse();
+                return arr;
+            }
+        }
+
         $scope.$watch('esResponse', function (resp) {
 
             if (!resp) {
@@ -140,9 +157,18 @@ define(function (require) {
             var rowAggId = _.first(_.pluck($scope.vis.aggs.bySchemaName['rows'], 'id'));
             var metricsAggId = _.first(_.pluck($scope.vis.aggs.bySchemaName['metric'], 'id'));
             var colLabel = '';
-            if ($scope.vis.aggs.bySchemaName['columns']) colLabel = $scope.vis.aggs.bySchemaName['columns'][0]._opts.params.customLabel;
+            if ($scope.vis.aggs.bySchemaName['columns']) {
+                colLabel = $scope.vis.aggs.bySchemaName['columns'][0]._opts.params.customLabel;
+                if (_.isUndefined(colLabel) || colLabel == '') colLabel = $scope.vis.aggs.bySchemaName['columns'][0].params.field.displayName;
+            }
+
             var rowLabel = '';
-            if ($scope.vis.aggs.bySchemaName['rows']) rowLabel = $scope.vis.aggs.bySchemaName['rows'][0]._opts.params.customLabel;
+            if ($scope.vis.aggs.bySchemaName['rows']) {
+                rowLabel = $scope.vis.aggs.bySchemaName['rows'][0]._opts.params.customLabel;
+                if (_.isUndefined(rowLabel) || rowLabel == '') rowLabel = $scope.vis.aggs.bySchemaName['rows'][0].params.field.displayName;
+            }
+            var metricLabel = $scope.vis.aggs.bySchemaName['metric'][0].params.customLabel;
+            if (_.isUndefined(metricLabel) || metricLabel == '') metricLabel = 'Value';
             var metricsAgg = $scope.vis.aggs.bySchemaName['metric'][0];
             var buckets = resp.aggregations[columnAggId].buckets;
             var categories = [];
@@ -153,9 +179,9 @@ define(function (require) {
                     row[rowAggId].buckets.forEach(function (col, j) {
                         var cell = {};
                         cell['x'] = i;
-                        cell['x_label'] = row.key;
+                        cell['x_label'] = row.key.toString();
                         cell['y'] = j;
-                        cell['y_label'] = col.key;
+                        cell['y_label'] = col.key.toString();
                         cell['value'] = metricsAgg.getValue(col);
                         cells.push(cell);
                     });
@@ -172,6 +198,41 @@ define(function (require) {
 
             var x_categories = _.uniq(_.map(cells, 'x_label'));
             var y_categories = _.uniq(_.map(cells, 'y_label'));
+            var new_cells = [];
+            var col_field_type = $scope.vis.aggs.bySchemaName['columns'][0].params.field.type;
+            var col_field_orderby = $scope.vis.aggs.bySchemaName['columns'][0].params.orderBy;
+            var col_field_order = $scope.vis.aggs.bySchemaName['columns'][0].params.order.val;
+
+            var row_field_type = $scope.vis.aggs.bySchemaName['rows'][0].params.field.type;
+            var row_field_orderby = $scope.vis.aggs.bySchemaName['rows'][0].params.orderBy;
+            var row_field_order = $scope.vis.aggs.bySchemaName['rows'][0].params.order.val;
+
+            if (col_field_orderby === '_term' && col_field_orderby === '_term') {
+
+                x_categories = orderBy(x_categories, col_field_type, col_field_order);
+                y_categories = orderBy(y_categories, row_field_type, row_field_order);
+
+                x_categories.forEach(function (x_row, i) {
+                    y_categories.forEach(function (y_row, j) {
+                        var value = _.filter(cells, {"x_label": x_row, "y_label": y_row});
+                        if (!value.length) {
+                            value = 0;
+                        } else {
+                            value = value[0].value;
+                        }
+                        var cell = {};
+                        cell['x'] = i;
+                        cell['x_label'] = x_row;
+                        cell['y'] = j;
+                        cell['y_label'] = y_row;
+                        cell['value'] = value;
+                        new_cells.push(cell);
+                    });
+                });
+                cells = new_cells;
+            }
+
+
             var hc_options = {
                 chart: {
                     renderTo: 'highcharts_hm_' + $scope.$id,
@@ -217,7 +278,7 @@ define(function (require) {
                     formatter: function () {
                         return colLabel + ': <b>' + this.series.xAxis.categories[this.point.x] + '</b><br/>' +
                             rowLabel + ': <b>' + this.series.yAxis.categories[this.point.y] + '</b><br/>' +
-                            'Value: <b>' + this.point.value + '</b>';
+                            metricLabel + ': <b>' + this.point.value + '</b>';
                     }
                 },
                 plotOptions: {
@@ -236,13 +297,15 @@ define(function (require) {
                     borderWidth: 1,
                     data: cells,
                     dataLabels: {
-                        enabled: true,
+                        enabled: false,
                         color: '#000000'
                     }
                 }]
-
-
             };
+
+            if ($scope.vis.params.dataLabel) {
+                hc_options.series[0].dataLabels.enabled = true;
+            }
 
             if (typeof $scope.vis.params.hc_options == 'string' && $scope.vis.params.hc_options.trim().length > 0) {
                 var additional_options = JSON.parse($scope.vis.params.hc_options);
