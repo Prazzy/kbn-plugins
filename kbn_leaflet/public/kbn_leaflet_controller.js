@@ -6,7 +6,8 @@ define(function (require) {
     require('jquery');
     var L = require('leaflet');
     require('./bower_components/leaflet_js/leaflet.markercluster');
-    require('./bower_components/leaflet_js//MarkerCluster.Default.css');
+    require('./bower_components/leaflet_js/mq-map');
+    require('./bower_components/leaflet_js/MarkerCluster.Default.css');
 
     var module = require('ui/modules').get('kbn_leaflet', ['kibana']);
 
@@ -83,7 +84,8 @@ define(function (require) {
                         minZoom: 2,
                         maxZoom: 18,
                         noWrap: true,
-                        fadeAnimation: false
+                        fadeAnimation: false,
+                        layers: MQ.mapLayer()
                     });
 
                     $scope.paths = {};
@@ -117,8 +119,8 @@ define(function (require) {
                 //    .addTo(map1);
 
                 // This could be made configurable?
-                this.wms = config.get('visualization:tileMap:WMSdefaults');
-                L.tileLayer.wms(this.wms.url, this.wms.options).addTo(map1);
+                //this.wms = config.get('visualization:tileMap:WMSdefaults');
+                //L.tileLayer.wms(this.wms.url, this.wms.options).addTo(map1);
                 var markers = new L.MarkerClusterGroup({maxClusterRadius: 100});
 
                 if (map_type === "Marker Cluster") {
