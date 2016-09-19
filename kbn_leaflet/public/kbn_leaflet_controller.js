@@ -78,7 +78,7 @@ define(function (require) {
             mapSearchSource.index($scope.vis.indexPattern);
             mapSearchSource.onResults().then(function onResults(searchResp) {
                 if (typeof $scope.map1 === 'undefined') {
-                    $scope.map1 = new L.map("map_container1", {
+                    $scope.map1 = new L.map('leaflet_' + $scope.$id, {
                         scrollWheelZoom: true,
                         //center: [40, -86],
                         minZoom: 2,
