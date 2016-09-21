@@ -138,14 +138,15 @@ define(function (require) {
                         _.each(tooltip_fields, function (field) {
                             tooltip_text += field + " : " + es_data[field] + "<br />";
                         });
-                        var marker = L.marker(new L.LatLng(es_data[lat], es_data[lng]), {
-                            title: es_data[lat] + "," + es_data[lng]
-                        });
-                        marker.bindPopup(tooltip_text, {
-                            'minWidth': '200',
-                            'maxWidth': '200'
-                        });
-                        markerList.push(marker);
+                        if (es_data[lat] && es_data[lng]) {   
+                           var marker = L.marker(new L.LatLng(es_data[lat], es_data[lng]), {
+                               title: es_data[lat] + "," + es_data[lng]
+                           });
+                           marker.bindPopup(tooltip_text, {
+                               maxWidth: 500
+                           });
+                           markerList.push(marker);
+                        } 
                     });
 
                     markers.addLayers(markerList);
@@ -249,7 +250,7 @@ define(function (require) {
                         _.each(map_json_data.switchmarkers, function (marker_i, i) {
                             var tooltip_content = tooltip_text + marker_i.content;
                             var switchMarker = L.marker([marker_i.latitude, marker_i.longitude], {icon: tealIcon}).addTo(map1);
-                            switchMarker.bindPopup(tooltip_content, {'minWidth': '200', 'maxWidth': '200'});
+                            switchMarker.bindPopup(tooltip_content, {maxWidth: 500});
                             $scope.switchMarkers.push(switchMarker);
                         });
 
@@ -257,7 +258,7 @@ define(function (require) {
                         _.each(map_json_data.downmarkers, function (marker_i, i) {
                             var tooltip_content = tooltip_text + marker_i.content;
                             var offlineMarker = L.marker([marker_i.latitude, marker_i.longitude], {icon: orangeIcon}).addTo(map1);
-                            offlineMarker.bindPopup(tooltip_content, {'minWidth': '200', 'maxWidth': '200'});
+                            offlineMarker.bindPopup(tooltip_content, {maxWidth: 500});
                             $scope.offlineMarkers.push(offlineMarker);
                         });
 
@@ -265,20 +266,20 @@ define(function (require) {
                         _.each(map_json_data.offtoonmarkers, function (marker_i, i) {
                             var tooltip_content = tooltip_text + marker_i.content;
                             var onlineMarker = L.marker([marker_i.latitude, marker_i.longitude], {icon: yellowIcon}).addTo(map1);
-                            onlineMarker.bindPopup(tooltip_content, {'minWidth': '200', 'maxWidth': '200'});
+                            onlineMarker.bindPopup(tooltip_content, {maxWidth: 500});
                             $scope.onlineMarkers.push(onlineMarker);
                         });
 
                         // first marker
                         var firstMarker = L.marker([map_json_data.markers[0].latitude, map_json_data.markers[0].longitude], {icon: greenIcon}).addTo(map1);
                         var tooltip_content = tooltip_text + map_json_data.markers[0].content;
-                        firstMarker.bindPopup(tooltip_content, {'minWidth': '200', 'maxWidth': '200'});
+                        firstMarker.bindPopup(tooltip_content, {maxWidth: 500});
                         $scope.firstMarkers.push(firstMarker);
 
                         // last marker
                         var lastMarker = L.marker([map_json_data.markers[map_json_data.markers.length - 1].latitude, map_json_data.markers[map_json_data.markers.length - 1].longitude], {icon: redIcon}).addTo(map1);
                         var tooltip_content = tooltip_text + map_json_data.markers[map_json_data.markers.length - 1].content;
-                        lastMarker.bindPopup(tooltip_content, {'minWidth': '200', 'maxWidth': '200'});
+                        lastMarker.bindPopup(tooltip_content, {maxWidth: 500});
                         $scope.lastMarkers.push(lastMarker);
 
                         // polylines
