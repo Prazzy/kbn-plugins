@@ -74,8 +74,8 @@ define(function (require) {
             if ($scope.vis.params.tooltip) tooltip_fields = $scope.vis.params.tooltip.split(",");
 
             var mapSearchSource = new SearchSource();
-            mapSearchSource.set('filter', $scope.searchSource.getOwn('filter'));
-            mapSearchSource.set('query', $scope.searchSource.getOwn('query'));
+            mapSearchSource.set('filter', mapSearchSource.getOwn('filter'));
+            mapSearchSource.set('query', mapSearchSource.getOwn('query'));
             mapSearchSource.size(size);
             mapSearchSource.index($scope.vis.indexPattern);
             mapSearchSource.onResults().then(function onResults(searchResp) {
