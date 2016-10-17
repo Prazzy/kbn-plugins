@@ -216,28 +216,33 @@ define(function (require) {
 
 
                     var tealIcon = L.icon({
-                        iconUrl: '../plugins/kbn_leaflet/images/teal-dot.png',
+                        iconUrl: '../plugins/kbn_leaflet/images/teal-dot2.png',
                         iconAnchor: [10, 30]
                     });
 
                     var orangeIcon = L.icon({
-                        iconUrl: '../plugins/kbn_leaflet/images/orange-dot.png',
+                        iconUrl: '../plugins/kbn_leaflet/images/orange-dot2.png',
                         iconAnchor: [10, 30]
                     });
 
                     var yellowIcon = L.icon({
-                        iconUrl: '../plugins/kbn_leaflet/images/yellow-dot.png',
+                        iconUrl: '../plugins/kbn_leaflet/images/yellow-dot2.png',
                         iconAnchor: [10, 30]
                     });
 
                     var greenIcon = L.icon({
-                        iconUrl: '../plugins/kbn_leaflet/images/green-dot.png',
+                        iconUrl: '../plugins/kbn_leaflet/images/green-dot2.png',
                         iconAnchor: [10, 30]
                     });
 
                     var redIcon = L.icon({
-                        iconUrl: '../plugins/kbn_leaflet/images/red-dot.png',
+                        iconUrl: '../plugins/kbn_leaflet/images/red-dot3.png',
                         iconAnchor: [10, 30]
+                    });
+
+                    var airplaneIcon = L.icon({
+                        iconUrl: '../plugins/kbn_leaflet/images/airplane.png',
+                        iconAnchor: [10, 30],
                     });
 
                     _.each(searchResp.hits.hits, function (hit, i) {
@@ -247,6 +252,7 @@ define(function (require) {
                             tooltip_text += field + " : " + es_src[field] + "<br />";
                         });
 
+			if (typeof es_src.data != 'undefined') {	
                         var map_json_data = $.parseJSON(es_src.data);
                         // switch markers
                         _.each(map_json_data.switchmarkers, function (marker_i, i) {
@@ -279,7 +285,9 @@ define(function (require) {
                         $scope.firstMarkers.push(firstMarker);
 
                         // last marker
-                        var lastMarker = L.marker([map_json_data.markers[map_json_data.markers.length - 1].latitude, map_json_data.markers[map_json_data.markers.length - 1].longitude], {icon: redIcon}).addTo(map1);
+                        if (es_src.InFlight) {
+                                var lastMarker = L.marker([map_json_data.markers[map_json_data.markers.length - 1].latitude, map_json_data.markers[map_json_data.markers.length - 1].longitude], { icon: airplaneIcon }).addTo(map1); } else { var lastMarker = L.marker([map_json_data.markers[map_json_data.markers.length - 1].latitude, map_json_data.markers[map_json_data.markers.length - 1].longitude], { icon: redIcon }).addTo(map1);
+                        }                        
                         var tooltip_content = tooltip_text + map_json_data.markers[map_json_data.markers.length - 1].content;
                         lastMarker.bindPopup(tooltip_content, {maxWidth: 500});
                         $scope.lastMarkers.push(lastMarker);
@@ -293,6 +301,7 @@ define(function (require) {
                             }).addTo(map1);
                             $scope.poly_list.push(line);
                         });
+                        }
                         map1.fitBounds([[-90, -220], [90, 220]]);
                     });
                 }
