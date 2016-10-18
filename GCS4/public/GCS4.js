@@ -35,6 +35,7 @@ chrome
     moment.tz.setDefault("UTC");
   }
 
+
   // Hide app switcher icon
   $scope.chrome.setShowAppsLink(false);
 
