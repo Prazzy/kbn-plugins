@@ -305,17 +305,15 @@ define(function (require) {
 			}
 	
 			for (var key in data) {
-	        	  	//tmp.push(data[key][i]);
-                                if (table.columns[i].aggConfig._opts.type == 'date_histogram') {
-                                     tmp.push(utcformat(data[key][i]));
-                                } else {
-                                    tmp.push(data[key][i])
-                                }
-
+				if (table.columns[i].aggConfig._opts.type == 'date_histogram') {
+					 tmp.push(utcformat(data[key][i]));
+				} else {
+					tmp.push(data[key][i])
+				}
 				//if ( typeof data[key][i] === 'string') {
 				//	typex = "category";
 				//}
-			};
+			}
 			
 			if (i > 0){
 				// max & min identification 		
