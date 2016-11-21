@@ -8,7 +8,7 @@ module.controller('KbnExtendedMetricVisController', function ($scope, Private) {
   const tabifyAggResponse = Private(AggResponseTabifyTabifyProvider);
   const metrics = $scope.metrics = [];
   const calcOutputs = $scope.calcOutputs = [];
-  $scope.vis.params.tooltipNumberFormat = '0,0.00';
+  $scope.vis.params.outputNumberFormat = '0,0.00';
 
   function isInvalid(val) {
     return _.isUndefined(val) || _.isNull(val) || _.isNaN(val);
@@ -18,7 +18,7 @@ module.controller('KbnExtendedMetricVisController', function ($scope, Private) {
     $scope.vis.params.outputs.forEach(function (output) {
       try {
         const func = Function("metrics", "return " + output.formula);
-        output.value = numeral(func(metrics)).format($scope.vis.params.tooltipNumberFormat) || "?";
+        output.value = numeral(func(metrics)).format($scope.vis.params.outputNumberFormat) || "?";
       } catch (e) {
         output.value = '?';
       }
