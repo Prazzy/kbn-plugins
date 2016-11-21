@@ -80,11 +80,6 @@ define(function (require) {
 
                 const queryFilter = Private(require('ui/filter_bar/query_filter'));
 
-                // no filter pin functionality for plugins
-                queryFilter.pinFilter = function (filter, force) {
-                    return filter;
-                };
-
                 const notify = new Notifier({
                     location: 'Dashboard'
                 });
@@ -93,29 +88,7 @@ define(function (require) {
                 const dash = $scope.dash = $route.current.locals.dash;
                 if (_.isUndefined(dash.id)) {
                     savedDashboards.find().then(function (params) {
-                        var filters = queryFilter.getGlobalFilters();
-                        var operator = ['ALL'];
-                        if (!_.isUndefined(filters) && filters.length) var filter_operator = filters[0].meta.value;
-                        var appTitle = chrome.getAppTitle();
-                        var appTitle_lst = appTitle.split('_');
-                        var app = appTitle_lst[0];
-                        operator.push(filter_operator);
-
-                        var es_res = params.hits;
-                        es_res = _.filter(es_res, function (hit) {
-                            var options = JSON.parse(hit.optionsJSON);
-                            var tab_order = parseInt(options.order);
-                            if (filters.length) {
-                                return _.contains(options.operator.split(","), filter_operator) && options.app == app && tab_order;
-                            }
-                            else {
-                                return options.app == app && tab_order;
-                            }
-                        });
-
-                        es_res = _.sortBy(es_res, function (item) {
-                            return parseInt(JSON.parse(item.optionsJSON).order)
-                        });
+                        var es_res = getDashList(params);
                         kbnUrl.change('/dashboard/'.concat(es_res[0].id));
                         //return savedDashboards.get(es_res[0].id);
                     });
@@ -221,6 +194,63 @@ define(function (require) {
                     return ++index;
                 }
 
+                function getDashList(params) {
+                    var filters = queryFilter.getGlobalFilters();
+                    var operator = ['ALL'];
+                    var filter_operator = '';
+                    var filter_menu_group = ''; 
+                    if (!_.isUndefined(filters) && filters.length) {
+                        if (filters[0].meta.key == 'acl_filter_code') filter_operator = filters[0].meta.value;                    
+                        filter_menu_group = filters[1].meta.value; 
+                    }    
+                    var appTitle = $scope.chrome.getAppTitle();
+                    var appTitle_lst = appTitle.split('_');
+                    var app = appTitle_lst[0];
+                    var multiple_operators = 0;
+                    if (filter_operator && filter_operator != 'ALL') {
+                        filter_operator = filter_operator.split(" ");
+                        if (filter_operator instanceof Array) multiple_operators = 1;
+                        operator.push(filter_operator);
+                    }      
+
+                    var es_res = params.hits;
+                    es_res = _.filter(es_res, function (hit) {
+                        var options = JSON.parse(hit.optionsJSON);
+                        var tab_order = parseInt(options.order);
+                        var menu_group = !_.isUndefined(options.menu_group) ? options.menu_group: '';
+
+                        // External dashboards
+                        if (filters.length) {
+                            // Multiple operators
+                            if (multiple_operators && filter_operator.length > 1) {
+                                var not_exists = 0;
+                                _.forEach(filter_operator, function(op) {
+                                    if (!_.contains(options.operator.split(","), op)) {
+                                        not_exists = 1;
+                                        return
+                                    }
+                                });
+                                if (!not_exists) {return options.app == app && tab_order && filter_menu_group == menu_group;}
+                                else { return [];}
+                            } else {
+                                // Single operator
+                                if (filter_operator == 'ALL' || _.contains(operator, 'ALL')) return options.app == app && tab_order  && filter_menu_group == menu_group;
+                                else return _.contains(options.operator.split(","), filter_operator) && options.app == app && tab_order  && filter_menu_group == menu_group;
+                            }
+                        }
+                        else {
+                            // Internal dashboards
+                            return options.app == app && tab_order && filter_menu_group == menu_group;
+                        }
+                    });
+
+                    es_res = _.sortBy(es_res, function (item) {
+                        return parseInt(JSON.parse(item.optionsJSON).order)
+                    });
+
+                    return es_res;
+                }
+
                 function updateQueryOnRootSource() {
                     const filters = queryFilter.getFilters();
                     if ($state.query) {
@@ -232,29 +262,7 @@ define(function (require) {
                     }
 
                     savedDashboards.find().then(function (params) {
-                        var filters = queryFilter.getGlobalFilters();
-                        var operator = ['ALL'];
-                        if (!_.isUndefined(filters) && filters.length) var filter_operator = filters[0].meta.value;
-                        var appTitle = $scope.chrome.getAppTitle();
-                        var appTitle_lst = appTitle.split('_');
-                        var app = appTitle_lst[0];
-                        operator.push(filter_operator);
-
-                        var es_res = params.hits;
-                        es_res = _.filter(es_res, function (hit) {
-                            var options = JSON.parse(hit.optionsJSON);
-                            var tab_order = parseInt(options.order);
-                            if (filters.length) {
-                                return _.contains(options.operator.split(","), filter_operator) && options.app == app && tab_order;
-                            }
-                            else {
-                                return options.app == app && tab_order;
-                            }
-                        });
-
-                        es_res = _.sortBy(es_res, function (item) {
-                            return parseInt(JSON.parse(item.optionsJSON).order)
-                        });
+                        var es_res = getDashList(params);
 
                         var dashboard_array = [];
                         es_res.forEach(function (row) {
