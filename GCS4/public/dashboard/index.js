@@ -54,7 +54,7 @@ define(function (require) {
 
     app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter, kbnUrl) {
         return {
-            controller: function ($scope, $rootScope, $route, $routeParams, $location, Private, getAppState, savedDashboards, es, kbnIndex) {
+            controller: function ($scope, $rootScope, $route, $routeParams, $location, Private, getAppState, savedDashboards, es, kbnIndex, $sce) {
 
                 var services = Private(require('ui/saved_objects/saved_object_registry')).byLoaderPropertiesName;
                 var service = services['visualizations'];
@@ -96,13 +96,10 @@ define(function (require) {
 
                 dash.dash_helptext = '';
                 service.find($scope.dash.title + " Notes").then(function (hits) {
-                    if (hits.total) dash.dash_helptext = JSON.parse(hits.hits[0].visState).params.html;
+                    if (hits.total) dash.dash_helptext = $sce.trustAsHtml(JSON.parse(hits.hits[0].visState).params.html);
                 });
 
                 dash.general_helptext = '';
-                service.find("General Notes").then(function (hits) {
-                    if (hits.total) dash.general_helptext = JSON.parse(hits.hits[0].visState).params.html;
-                });
 
                 if (dash.timeRestore && dash.timeTo && dash.timeFrom && !getAppState.previouslyStored()) {
                     timefilter.time.to = dash.timeTo;
