@@ -193,50 +193,57 @@ define(function (require) {
 
                 function getDashList(params) {
                     var filters = queryFilter.getGlobalFilters();
-                    var operator = ['ALL'];
                     var filter_operator = '';
-                    var filter_menu_group = ''; 
+                    var filter_menu_group = '';
                     if (!_.isUndefined(filters) && filters.length) {
-                        if (filters[0].meta.key == 'acl_filter_code') { 
-                            filter_operator = filters[0].meta.value;                    
-                            filter_menu_group = filters[1].meta.value; 
-                          } else {
-                            filter_menu_group = filters[0].meta.value;  
-                          }  
-                    }    
+                        if (filters[0].meta.key == 'acl_filter_code' || filters[0].meta.key == 'query') {
+                            filter_operator = filters[0].meta.value;
+                            filter_menu_group = filters[1].meta.value;
+                        } else {
+                            filter_menu_group = filters[0].meta.value;
+                        }
+                    }
+
                     var appTitle = $scope.chrome.getAppTitle();
                     var appTitle_lst = appTitle.split('_');
                     var app = appTitle_lst[0];
                     var multiple_operators = 0;
+                    var operator = [];
                     if (filter_operator && filter_operator != 'ALL') {
                         filter_operator = filter_operator.split(" ");
-                        if (filter_operator instanceof Array) multiple_operators = 1;
-                        operator.push(filter_operator);
-                    }      
+                        if (filter_operator instanceof Array) {
+                            multiple_operators = 1;
+                        }
+                        operator = filter_operator;
+                    }
 
                     var es_res = params.hits;
                     es_res = _.filter(es_res, function (hit) {
                         var options = JSON.parse(hit.optionsJSON);
                         var tab_order = parseInt(options.order);
-                        var menu_group = !_.isUndefined(options.menu_group_name) ? options.menu_group_name: '';
+                        var menu_group = !_.isUndefined(options.menu_group_name) ? options.menu_group_name : 'UNK';
 
                         // External dashboards
                         if (filters.length) {
                             // Multiple operators
                             if (multiple_operators && filter_operator.length > 1) {
                                 var not_exists = 0;
-                                _.forEach(filter_operator, function(op) {
+                                _.forEach(filter_operator, function (op) {
                                     if (!_.contains(options.operator.split(","), op)) {
                                         not_exists = 1;
                                         return
                                     }
                                 });
-                                if (!not_exists) {return options.app == app && tab_order && filter_menu_group == menu_group;}
-                                else { return [];}
+                                if (!not_exists) {
+                                    return options.app == app && tab_order && filter_menu_group == menu_group;
+                                }
+                                else {
+                                    return false;
+                                }
                             } else {
                                 // Single operator
-                                if (filter_operator == 'ALL' || _.contains(operator, 'ALL')) return options.app == app && tab_order  && filter_menu_group == menu_group;
-                                else return _.contains(options.operator.split(","), filter_operator) && options.app == app && tab_order  && filter_menu_group == menu_group;
+                                if (filter_operator == 'ALL' || _.contains(operator, 'ALL')) return options.app == app && tab_order && filter_menu_group == menu_group;
+                                else return _.contains(options.operator.split(","), filter_operator) && options.app == app && tab_order && filter_menu_group == menu_group;
                             }
                         }
                         else {
