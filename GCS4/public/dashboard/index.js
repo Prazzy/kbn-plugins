@@ -197,8 +197,12 @@ define(function (require) {
                     var filter_operator = '';
                     var filter_menu_group = ''; 
                     if (!_.isUndefined(filters) && filters.length) {
-                        if (filters[0].meta.key == 'acl_filter_code') filter_operator = filters[0].meta.value;                    
-                        filter_menu_group = filters[1].meta.value; 
+                        if (filters[0].meta.key == 'acl_filter_code') { 
+                            filter_operator = filters[0].meta.value;                    
+                            filter_menu_group = filters[1].meta.value; 
+                          } else {
+                            filter_menu_group = filters[0].meta.value;  
+                          }  
                     }    
                     var appTitle = $scope.chrome.getAppTitle();
                     var appTitle_lst = appTitle.split('_');
@@ -214,7 +218,7 @@ define(function (require) {
                     es_res = _.filter(es_res, function (hit) {
                         var options = JSON.parse(hit.optionsJSON);
                         var tab_order = parseInt(options.order);
-                        var menu_group = !_.isUndefined(options.menu_group) ? options.menu_group: '';
+                        var menu_group = !_.isUndefined(options.menu_group_name) ? options.menu_group_name: '';
 
                         // External dashboards
                         if (filters.length) {
