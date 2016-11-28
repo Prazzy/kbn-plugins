@@ -224,7 +224,7 @@ define(function (require) {
                         var menu_group = !_.isUndefined(options.menu_group_name) ? options.menu_group_name : 'UNK';
 
                         // External dashboards
-                        if (filters.length) {
+                        if (filters.length > 1) {
                             // Multiple operators
                             if (multiple_operators && filter_operator.length > 1) {
                                 var not_exists = 0;
