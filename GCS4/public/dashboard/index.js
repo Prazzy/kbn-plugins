@@ -208,13 +208,13 @@ define(function (require) {
                     var appTitle_lst = appTitle.split('_');
                     var app = appTitle_lst[0];
                     var multiple_operators = 0;
-                    var operator = [];
                     if (filter_operator && filter_operator != 'ALL') {
                         filter_operator = filter_operator.split(" ");
-                        if (filter_operator instanceof Array) {
+                        if (filter_operator instanceof Array && filter_operator.length > 1) {
                             multiple_operators = 1;
-                        }
-                        operator = filter_operator;
+                        } else {
+                            filter_operator = filter_operator[0];
+                        } 
                     }
 
                     var es_res = params.hits;
@@ -242,7 +242,7 @@ define(function (require) {
                                 }
                             } else {
                                 // Single operator
-                                if (filter_operator == 'ALL' || _.contains(operator, 'ALL')) return options.app == app && tab_order && filter_menu_group == menu_group;
+                                if (filter_operator == 'ALL') return options.app == app && tab_order && filter_menu_group == menu_group;
                                 else return _.contains(options.operator.split(","), filter_operator) && options.app == app && tab_order && filter_menu_group == menu_group;
                             }
                         }
