@@ -96,12 +96,12 @@ define(function (require) {
                     });
                 }
 
-                dash.dash_helptext = '';
-                service.find($scope.dash.title + " Notes").then(function (hits) {
-                    if (hits.total) dash.dash_helptext = $sce.trustAsHtml(JSON.parse(hits.hits[0].visState).params.html);
-                });
+                // dash.dash_helptext = '';
+                // service.find($scope.dash.title + " Notes").then(function (hits) {
+                //     if (hits.total) dash.dash_helptext = $sce.trustAsHtml(JSON.parse(hits.hits[0].visState).params.html);
+                // });
 
-                dash.general_helptext = '';
+                // dash.general_helptext = '';
 
                 if (dash.timeRestore && dash.timeTo && dash.timeFrom && !getAppState.previouslyStored()) {
                     timefilter.time.to = dash.timeTo;
@@ -149,7 +149,7 @@ define(function (require) {
                     share: require('plugins/kibana/dashboard/partials/share.html'),
                     pickVis: require('plugins/kibana/dashboard/partials/pick_visualization.html'),
                     options: require('plugins/kibana/dashboard/partials/options.html'),
-                    help: require('./help.html')
+                    //help: require('./help.html')
                 });
 
                 $scope.refresh = _.bindKey(courier, 'fetch');
