@@ -64,9 +64,11 @@ define(function (require) {
                     var window_top = $(window).scrollTop();
                     var div_top = $('#sticky-anchor').offset().top;
                     if (window_top > div_top) {
+                        $('#tabs-sticky').addClass('top-stick');
                         $('#sticky').addClass('stick');
-                        $('#sticky-anchor').height($('#sticky').outerHeight());
+                        $('#sticky-anchor').height($('#tabs-sticky').outerHeight());
                     } else {
+                        $('#tabs-sticky').removeClass('top-stick');
                         $('#sticky').removeClass('stick');
                         $('#sticky-anchor').height(0);
                     }

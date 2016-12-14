@@ -10,17 +10,6 @@
 
 @navbar-default-badge-color: #F2F2F2;
 
-#sticky {
-  width: 100%;
-}
-
-#sticky.stick {
-  margin-top: 0 !important;
-  position: fixed;
-  top: 0;
-  z-index: 10000;
-  width: 100%;
-}
 
 body {
   background-color: #FFFFFF;
@@ -128,14 +117,20 @@ li.search-box-li {
     width: 100%;
 }
 
-#sticky.stick {
+#tabs-sticky.top-stick {
     margin-top: 0 !important;
     position: fixed;
     top: 0;
     z-index: 10000;
     width: 100%;
 }
-
+#sticky.stick {
+    margin-top: 10 !important;
+    position: fixed;
+    top: 10;
+    z-index: 10000;
+    width: 100%;
+}
 g.legend-title {
   font-weight: bold;
   font-size: initial;
@@ -231,20 +226,8 @@ saved-object-finder div.finder-form-options {
     display: none;
 }
 
-i.fa.discover-table-open-icon.fa-caret-right {
-    display: none;
-}
-
 .form-control, input {
     border: 1px solid #dddddd
-}
-
-td.toggle_row {
-    display: none;
-}
-
-th.toggle_row {
-    display: none;
 }
 
 img.leaflet-tile {
