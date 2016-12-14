@@ -54,7 +54,7 @@ define(function (require) {
 
     app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter, kbnUrl) {
         return {
-            controller: function ($scope, $rootScope, $route, $routeParams, $location, Private, getAppState, savedDashboards, es, kbnIndex, $sce) {
+            controller: function ($scope, $rootScope, $route, $routeParams, $location, Private, getAppState, savedDashboards, es) {
 
                 var services = Private(require('ui/saved_objects/saved_object_registry')).byLoaderPropertiesName;
                 var service = services['visualizations'];
@@ -224,9 +224,10 @@ define(function (require) {
                         var options = JSON.parse(hit.optionsJSON);
                         var tab_order = parseInt(options.order);
                         var menu_group = !_.isUndefined(options.menu_group_name) ? options.menu_group_name : 'UNK';
-
+                        var isPublished = 0;
+                        if (options.isPublished) isPublished = 1;
                         // External dashboards
-                        if (filters.length > 1) {
+                        if (filters.length > 1 && isPublished) {
                             // Multiple operators
                             if (multiple_operators && filter_operator.length > 1) {
                                 var not_exists = 0;
