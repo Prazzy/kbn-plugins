@@ -27,6 +27,10 @@
       >
         <div class="typeahead" kbn-typeahead="dashboard">
           <div class="localSearch">
+            <span class="dashTitle"
+              ng-show="dash.id"
+              ng-bind="::dash.title"
+            ></span>
             <input
               parse-query
               input-focus
