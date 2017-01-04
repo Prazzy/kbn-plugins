@@ -3,16 +3,18 @@
   <kbn-top-nav name="dashboard" config="topNavMenu">
     <!-- Transcluded elements. -->
     <div data-transclude-slots>
-      <!-- Title. -->
-      <div
-        data-transclude-slot="topLeftCorner"
-        class="localTitle"
-      >
-        <span
-          ng-show="dash.id"
-          ng-bind="::dash.title"
-        ></span>
+
+      <!-- Menu Tabs. -->
+      <div data-transclude-slot="topLeftCorner">
+        <ul class="nav navbar-nav" role="navigation">
+          <li ng-repeat="tab in tabs" ng-class="{ active: isActiveTab(tab) }">
+            <a ng-href="{{ tab.url }}" ng-style="{ 'border-bottom-color': tab.activeIndicatorColor }">
+              {{ tab.title }}
+            </a>
+          </li>
+        </ul>
       </div>
+      <!-- Menu Tabs. -->
 
       <!-- Search. -->
       <form
