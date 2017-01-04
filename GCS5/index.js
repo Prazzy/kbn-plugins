@@ -42,11 +42,11 @@ module.exports = function (kibana) {
       links: [
         {
           id: 'GCS5:dashboard',
-          title: 'Dashboard',
+          title: 'GCS5',
           order: -1001,
           url: `${kbnBaseUrl}#/dashboard`,
           description: 'compose visualizations for much win', // TODO: change the description
-          icon: 'plugins/GCS5/assets/wrench.svg', // TODO: change icon
+          icon: 'plugins/GCS5/assets/plane.svg', // TODO: change icon
         }
       ],
       injectDefaultVars(server, options) {
