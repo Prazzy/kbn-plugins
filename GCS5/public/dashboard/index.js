@@ -57,7 +57,7 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
   return {
     restrict: 'E',
     controllerAs: 'dashboardApp',
-    controller: function ($scope, $rootScope, $route, $routeParams, $location, Private, getAppState) {
+    controller: function ($scope, $rootScope, $route, $routeParams, $location, Private, getAppState, savedDashboards) {
 
       const queryFilter = Private(FilterBarQueryFilterProvider);
 
@@ -66,6 +66,82 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
       });
 
       const dash = $scope.dash = $route.current.locals.dash;
+
+      // PAC Feature: custom menu tabs showing dashboards 
+      $scope.isActiveTab = function (tab) {
+        return dash.id === tab.title;
+      }
+      $scope.tabs = [];
+
+      function getDashList(params) {
+        var filters = queryFilter.getGlobalFilters();
+        var filter_operator = '';
+        var filter_menu_group = '';
+        if (!_.isUndefined(filters) && filters.length) {
+            if (filters[0].meta.key == 'acl_filter_code' || filters[0].meta.key == 'query') {
+                filter_operator = filters[0].meta.value;
+                filter_menu_group = filters[1].meta.value;
+            } else {
+                filter_menu_group = filters[0].meta.value;
+            }
+        }
+
+        var appTitle = $scope.chrome.getAppTitle();
+        var appTitle_lst = appTitle.split('_');
+        var app = appTitle_lst[0];
+        var multiple_operators = 0;
+        if (filter_operator && filter_operator != 'ALL') {
+            filter_operator = filter_operator.split(" ");
+            if (filter_operator instanceof Array && filter_operator.length > 1) {
+                multiple_operators = 1;
+            } else {
+                filter_operator = filter_operator[0];
+            } 
+        }
+
+        var es_res = params.hits;
+        es_res = _.filter(es_res, function (hit) {
+            var options = JSON.parse(hit.optionsJSON);
+            var tab_order = parseInt(options.order);
+            var menu_group = !_.isUndefined(options.menu_group_name) ? options.menu_group_name : 'UNK';
+            var isPublished = 0;
+            if (options.isPublished) isPublished = 1;
+            // External dashboards
+            if (filters.length > 1 && isPublished) {
+                // Multiple operators
+                if (multiple_operators && filter_operator.length > 1) {
+                    var not_exists = 0;
+                    _.forEach(filter_operator, function (op) {
+                        if (!_.contains(options.operator.split(","), op)) {
+                            not_exists = 1;
+                            return
+                        }
+                    });
+                    if (!not_exists) {
+                        return options.app == app && tab_order && filter_menu_group == menu_group;
+                    }
+                    else {
+                        return false;
+                    }
+                } else {
+                    // Single operator
+                    if (filter_operator == 'ALL') return options.app == app && tab_order && filter_menu_group == menu_group;
+                    else return _.contains(options.operator.split(","), filter_operator) && options.app == app && tab_order && filter_menu_group == menu_group;
+                }
+            }
+            else {
+                // Internal dashboards
+                return options.app == app && tab_order && filter_menu_group == menu_group;
+            }
+        });
+
+        es_res = _.sortBy(es_res, function (item) {
+            return parseInt(JSON.parse(item.optionsJSON).order)
+        });
+
+        return es_res;
+      }
+      // PAC Feature: custom menu tabs showing dashboards
 
       if (dash.timeRestore && dash.timeTo && dash.timeFrom && !getAppState.previouslyStored()) {
         timefilter.time.to = dash.timeTo;
@@ -200,6 +276,39 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
         } else {
           dash.searchSource.set('filter', filters);
         }
+
+        // PAC Feature: custom menu tabs showing dashboards 
+        savedDashboards.find().then(function (params) {
+            //var es_res = getDashList(params);
+            let es_res = [{
+                id: 'GCS5:dashboard1',
+                title: 'Dashboard1',
+                order: 1,
+                url: `#/dashboard/Dashboard1`
+              },
+              {
+                id: 'GCS5:dashboard2',
+                title: 'Dashboard2',
+                order: 2,
+                url: `#/dashboard/Dashboard2`
+              },
+              {
+                id: 'GCS5:dashboard3',
+                title: 'Dashboard3',
+                order: 3,
+                url: `#/dashboard/Dashboard3`
+              }
+            ]  
+            $scope.tabs = es_res;
+
+            // var dashboard_array = [];
+            // es_res.forEach(function (row) {
+            //     dashboard_array.push({id: "dashboard/".concat(row.id), title: row.title})
+            // });
+
+            // $scope.tabs = dashboard_array;
+        });
+        // PAC Feature: custom menu tabs showing dashboards 
       }
 
       function setDarkTheme(enabled) {
