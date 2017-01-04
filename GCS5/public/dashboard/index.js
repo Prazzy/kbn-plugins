@@ -10,13 +10,13 @@ import 'ui/share';
 import 'plugins/kibana/dashboard/directives/grid';
 import 'plugins/kibana/dashboard/components/panel/panel';
 import 'plugins/kibana/dashboard/services/saved_dashboards';
-import 'plugins/kibana/dashboard/styles/main.less';
+import 'plugins/GCS5/dashboard/styles/main.less';
 import FilterBarQueryFilterProvider from 'ui/filter_bar/query_filter';
 import DocTitleProvider from 'ui/doc_title';
 import stateMonitorFactory  from 'ui/state_management/state_monitor_factory';
 import uiRoutes from 'ui/routes';
 import uiModules from 'ui/modules';
-import indexTemplate from 'plugins/kibana/dashboard/index.html';
+import indexTemplate from 'plugins/GCS5/dashboard/index.html';
 
 require('ui/saved_objects/saved_object_registry').register(require('plugins/kibana/dashboard/services/saved_dashboard_register'));
 
