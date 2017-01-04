@@ -181,21 +181,6 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
       $scope.$watch('state.options.darkTheme', setDarkTheme);
 
       $scope.topNavMenu = [{
-        key: 'new',
-        description: 'New Dashboard',
-        run: function () { kbnUrl.change('/dashboard', {}); },
-        testId: 'dashboardNewButton',
-      }, {
-        key: 'add',
-        description: 'Add a panel to the dashboard',
-        template: require('plugins/kibana/dashboard/partials/pick_visualization.html'),
-        testId: 'dashboardAddPanelButton',
-      }, {
-        key: 'save',
-        description: 'Save Dashboard',
-        template: require('plugins/kibana/dashboard/partials/save_dashboard.html'),
-        testId: 'dashboardSaveButton',
-      }, {
         key: 'open',
         description: 'Open Saved Dashboard',
         template: require('plugins/kibana/dashboard/partials/load_dashboard.html'),
@@ -205,13 +190,7 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
         description: 'Share Dashboard',
         template: require('plugins/kibana/dashboard/partials/share.html'),
         testId: 'dashboardShareButton',
-      }, {
-        key: 'options',
-        description: 'Options',
-        template: require('plugins/kibana/dashboard/partials/options.html'),
-        testId: 'dashboardOptionsButton',
       }];
-
       $scope.refresh = _.bindKey(courier, 'fetch');
 
       timefilter.enabled = true;
