@@ -1,0 +1,5 @@
+{
+  "name": "metric-thresholds",
+  "version": "5.1.1",
+  "description": "Change the color of metrics on a kibana dashboard"
+}
