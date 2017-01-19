@@ -38,6 +38,7 @@ chrome
 
   // Hide app switcher icon
   $scope.chrome.setShowAppsLink(false);
+  if (!$scope.chrome.getVisible()) $scope.chrome.setPACEmbedURL(true);
 
   // wait for the application to finish loading
   $scope.$on('application.load', function () {
