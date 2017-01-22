@@ -252,7 +252,7 @@ define(function (require) {
                             tooltip_text += field + " : " + es_src[field] + "<br />";
                         });
 
-			if (typeof es_src.data != 'undefined') {	
+                    if (typeof es_src.data != 'undefined') {  
                         var map_json_data = $.parseJSON(es_src.data);
                         // switch markers
                         _.each(map_json_data.switchmarkers, function (marker_i, i) {
