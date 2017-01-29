@@ -25,7 +25,10 @@ module.exports = function (server) {
     	call(req, 'search', searchReq)
     	.then(function (response) {
         reply(response.hits.hits);
-      });
+      }).catch(function (resp) {
+        console.error("Error while fetching beams", resp);
+        reply([]);  
+      });;
     }
   });
 };

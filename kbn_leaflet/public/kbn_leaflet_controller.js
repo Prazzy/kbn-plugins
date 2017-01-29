@@ -206,6 +206,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
       //}())
       //    .addTo(map1);
 
+      let beams = [];
       if (map_type === "Marker Cluster") {
         try {
           if ($scope.map1 && $scope.markers.getLayers()) $scope.markers.clearLayers();
@@ -241,6 +242,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
 
         _.each(searchResp.hits.hits, function (hit, i) {
           var es_src = hit['_source'];
+          if (hit.beams) beams.push(hit.beams.split(','));
           var tooltip_text = "";
           _.each(tooltip_fields, function (field) {
               tooltip_text += field + " : " + es_src[field] + "<br />";
@@ -304,57 +306,59 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
         });
 
         // Beam layers
-        // get beam names
-        const kmlSourceIndexName = 'gcs4_kml_geojson';
-        const beamNames = ["MTNPAC_AFR1_APS7",
-                            "MTNPAC_AG1_T01",
-                            "MTNPAC_APS6_T01",
-                            "MTNPAC_BRW1_GE23SEP_NPH7NSEPV7N",
-                            "MTNPAC_BRW2_GE23NP",
-                            "MTNPAC_BRW2_GE23SWP",
-                            "MTNPAC_BUR3_W2A_D2VH_F1VH_NET3",
-                            "MTNPAC_COL1_IS14",
-                            "MTNPAC_COL1_T11NCA",
-                            "MTNPAC_DUB1_A5",
-                            "MTNPAC_GE23SP_T01",
-                            "MTNPAC_HKG2_SC2",
-                            "MTNPAC_HOL8_T11N_K11BVH_K35VH_NET11",
-                            "MTNPAC_IS15_T01"];
         if ($scope.controlLayers) {
           $scope.map1.removeControl($scope.controlLayers);
           delete $scope.controlLayers;
-        }  
-        $scope.controlLayers = L.control.layers(null, [], { collapsed: true }).addTo(map1);
-        const highlightStyle = {
-            weight: 2,
-            opacity: 0.6
-        };
-
-        // get co-ordinates
-        _.each(beamNames, function (beam, i) {
-          let params = {
-            index: kmlSourceIndexName,
-            beamName: beam
+        } 
+        if ($scope.vis.params.beam.enabled) {
+          // get beam names
+          const kmlSourceIndexName = $scope.vis.params.beam.index;
+          const beamNames = ["MTNPAC_AFR1_APS7",
+                              "MTNPAC_AG1_T01",
+                              "MTNPAC_APS6_T01",
+                              "MTNPAC_BRW1_GE23SEP_NPH7NSEPV7N",
+                              "MTNPAC_BRW2_GE23NP",
+                              "MTNPAC_BRW2_GE23SWP",
+                              "MTNPAC_BUR3_W2A_D2VH_F1VH_NET3",
+                              "MTNPAC_COL1_IS14",
+                              "MTNPAC_COL1_T11NCA",
+                              "MTNPAC_DUB1_A5",
+                              "MTNPAC_GE23SP_T01",
+                              "MTNPAC_HKG2_SC2",
+                              "MTNPAC_HOL8_T11N_K11BVH_K35VH_NET11",
+                              "MTNPAC_IS15_T01"]; 
+          $scope.controlLayers = L.control.layers(null, [], { collapsed: true }).addTo(map1);
+          const highlightStyle = {
+              weight: 2,
+              opacity: 0.6
           };
 
-          $http.post('../api/kbn_leaflet/geojson', params)
-          .then(function (resp) {
-            if (resp.data) {
-              let geojson_data = JSON.parse(resp.data[0]._source.GeoJSON);
-              let beamLayer = L.geoJson(geojson_data, {
-                onEachFeature: function (feature, layer) {
-                  layer.bindPopup(feature.properties.name);
-                  layer.on("mouseover", function (e) {
-                    layer.setStyle(highlightStyle);
-                  });               
-                },
-                weight: 1
-              });
-              map1.addLayer(beamLayer);
-              $scope.controlLayers.addOverlay(beamLayer, geojson_data.properties.name);
-            }
-          });
-        }); // Beam layers
+          // get co-ordinates
+          _.each(beamNames, function (beam, i) {
+            let params = {
+              index: kmlSourceIndexName,
+              beamName: beam
+            };
+
+            $http.post('../api/kbn_leaflet/geojson', params)
+            .then(function (resp) {
+              if (resp.data) {
+                let geojson_data = JSON.parse(resp.data[0]._source.GeoJSON);
+                let beamLayer = L.geoJson(geojson_data, {
+                  onEachFeature: function (feature, layer) {
+                    layer.bindPopup(feature.properties.name);
+                    layer.on("mouseover", function (e) {
+                      layer.setStyle(highlightStyle);
+                    });               
+                  },
+                  weight: 1
+                });
+                map1.addLayer(beamLayer);
+                $scope.controlLayers.addOverlay(beamLayer, geojson_data.properties.name);
+              }
+            });
+          }); 
+        } // Beam layers
       }
     });
     mapSearchSource.fetchQueued();
