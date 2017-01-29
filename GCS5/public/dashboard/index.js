@@ -17,7 +17,7 @@ import stateMonitorFactory  from 'ui/state_management/state_monitor_factory';
 import uiRoutes from 'ui/routes';
 import uiModules from 'ui/modules';
 import indexTemplate from 'plugins/GCS5/dashboard/index.html';
-import shareTemplate from 'plugins/kibana/dashboard/custom_share.html';
+import shareTemplate from 'plugins/GCS5/dashboard/templates/custom_share.html';
 
 require('ui/saved_objects/saved_object_registry').register(require('plugins/kibana/dashboard/services/saved_dashboard_register'));
 
