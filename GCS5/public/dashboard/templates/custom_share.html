@@ -1,0 +1,56 @@
+<div class="localDropdownPanels">
+  <!-- Right panel -->
+  <div class="localDropdownPanel localDropdownPanel--right">
+    <!-- Title -->
+    <div class="localDropdownTitle">
+      Share
+    </div>
+
+    <!-- Link -->
+    <div class="localDropdownSection">
+      <!-- Header -->
+      <div class="localDropdownHeader">
+        <div class="localDropdownHeader__label">
+          Link
+        </div>
+        <div class="localDropdownHeader__actions">
+          <a
+            data-test-subj="sharedSnapshotShortUrlButton"
+            class="localDropdownHeader__action"
+            ng-if="!share.urlFlags.shortSnapshot"
+            ng-click="share.toggleShortSnapshotUrl()"
+          >
+            Short URL
+          </a>
+
+          <a
+            class="localDropdownHeader__action"
+            ng-if="share.urlFlags.shortSnapshot"
+            ng-click="share.toggleShortSnapshotUrl()"
+          >
+            Long URL
+          </a>
+
+          <a
+            data-test-subj="sharedSnapshotCopyButton"
+            class="localDropdownHeader__action"
+            ng-click="share.copyToClipboard('#snapshotUrl')"
+          >
+            Copy
+          </a>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <input
+        data-test-subj="sharedSnapshotUrl"
+        id="snapshotUrl"
+        class="localDropdownInput"
+        type="text"
+        readonly
+        value="{{share.urlFlags.shortSnapshot ? share.urls.shortSnapshot : share.urls.snapshot}}"
+      />
+
+    </div>
+  </div>
+</div>

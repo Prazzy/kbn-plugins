@@ -17,6 +17,7 @@ import stateMonitorFactory  from 'ui/state_management/state_monitor_factory';
 import uiRoutes from 'ui/routes';
 import uiModules from 'ui/modules';
 import indexTemplate from 'plugins/GCS5/dashboard/index.html';
+import shareTemplate from 'plugins/kibana/dashboard/custom_share.html';
 
 require('ui/saved_objects/saved_object_registry').register(require('plugins/kibana/dashboard/services/saved_dashboard_register'));
 
@@ -51,6 +52,22 @@ uiRoutes
       }));
     }
   }
+});
+
+uiModules.get('kibana').config(function ($provide) {
+  $provide.decorator('shareDirective', function($delegate, $controller, $timeout) {
+    let directive = $delegate[0];
+    directive.template = shareTemplate;
+    let link = directive.link;
+    directive.compile = function() {
+      return function (scope, element, attrs) {
+        $timeout(function() {
+          scope.share.toggleShortSnapshotUrl();
+        }, 0);
+      };
+    };
+    return $delegate;
+  });
 });
 
 app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter, kbnUrl) {
