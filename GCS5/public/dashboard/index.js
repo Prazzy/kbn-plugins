@@ -276,7 +276,9 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
         // PAC Feature: custom menu tabs showing dashboards 
         savedDashboards.find().then(function (params) {
             //var es_res = getDashList(params);
-            let es_res = [{
+            let subUrl = _.find($scope.chrome.getNavLinks(), {'id':'GCS5:dashboard'}).lastSubUrl;
+            $scope.chrome.setLastUrlFor(dash.id, subUrl);
+            let esRes = [{
                 id: 'GCS5:dashboard1',
                 title: 'Dashboard1',
                 order: 1,
@@ -294,8 +296,15 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
                 order: 3,
                 url: `#/dashboard/Dashboard3`
               }
-            ]  
-            $scope.tabs = es_res;
+            ]
+            _.map(esRes, function (res) {
+              if (res.title === dash.title) res.url = subUrl;
+              else {
+                let prevUrl = $scope.chrome.getLastUrlFor(res.title);
+                if (prevUrl) res.url = prevUrl;
+              }
+            });  
+            $scope.tabs = esRes;
 
             // var dashboard_array = [];
             // es_res.forEach(function (row) {
