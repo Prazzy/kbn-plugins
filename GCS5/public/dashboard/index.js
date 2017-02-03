@@ -277,12 +277,12 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
         savedDashboards.find().then(function (params) {
             //var es_res = getDashList(params);
             let subUrl = _.find($scope.chrome.getNavLinks(), {'id':'GCS5:dashboard'}).lastSubUrl;
-            $scope.chrome.setLastUrlFor(dash.id, subUrl);
+            $scope.chrome.setLastUrlFor(dash.title, subUrl);
             let esRes = [{
-                id: 'GCS5:dashboard1',
+                id: 'Dashboard1',
                 title: 'Dashboard1',
                 order: 1,
-                url: `#/dashboard/Dashboard1`
+                url: `#/dashboard/dfd0b180-e9b4-11e6-af9c-133269a38460`
               },
               {
                 id: 'GCS5:dashboard2',
@@ -291,10 +291,10 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
                 url: `#/dashboard/Dashboard2`
               },
               {
-                id: 'GCS5:dashboard3',
+                id: 'Dashboard3',
                 title: 'Dashboard3',
                 order: 3,
-                url: `#/dashboard/Dashboard3`
+                url: `#/dashboard/e9b0c500-e9b4-11e6-af9c-133269a38460`
               }
             ]
             _.map(esRes, function (res) {
