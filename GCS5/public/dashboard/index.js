@@ -70,6 +70,21 @@ uiModules.get('kibana').config(function ($provide) {
   });
 });
 
+uiModules.get('kibana').config(function ($provide) {
+  $provide.decorator('appSwitcherDirective', function ($delegate, $controller) {
+    let directive = $delegate[0];
+    let controllerName = directive.controller;
+    directive.controller = function($scope, $timeout) {
+      angular.extend(this, $controller(controllerName, {$scope: $scope}));
+
+      $timeout(function() {
+        $scope.switcher.links = [];
+      }, 0);
+    };
+    return $delegate;
+  });
+});
+
 app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter, kbnUrl) {
   return {
     restrict: 'E',
