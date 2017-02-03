@@ -1,4 +1,6 @@
 <dashboard-app class="app-container dashboard-container">
+  <div id="sticky-anchor"></div>
+  <div id="sticky">
   <!-- Local nav. -->
   <kbn-top-nav name="dashboard" config="topNavMenu">
     <!-- Transcluded elements. -->
@@ -59,7 +61,7 @@
 
   <!-- Filters. -->
   <filter-bar state="state"></filter-bar>
-
+  </div>
   <div ng-show="!state.panels.length" class="text-center start-screen">
     <h2>No Dashboards Found</h2>
   </div>

@@ -84,6 +84,26 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
 
       const dash = $scope.dash = $route.current.locals.dash;
 
+      // PAC Feature: code for filter and search bar lock
+      function sticky_relocate() {
+        let window_top = $(window).scrollTop();
+        let div_top = $('#sticky-anchor').offset().top;
+        if (window_top > div_top) {
+          $('#sticky').addClass('stick');
+          $('#sticky-anchor').height($('#sticky').outerHeight());
+        } else {
+          $('#sticky').removeClass('stick');
+          $('#sticky-anchor').height(0);
+        }
+      }
+
+      $(function () {
+        $(window).scroll(sticky_relocate);
+        sticky_relocate();
+      });
+      // PAC Feature: code for filter and search bar lock    
+
+
       // PAC Feature: custom menu tabs showing dashboards 
       $scope.isActiveTab = function (tab) {
         return dash.title === tab.title;
