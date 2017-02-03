@@ -86,7 +86,7 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
 
       // PAC Feature: custom menu tabs showing dashboards 
       $scope.isActiveTab = function (tab) {
-        return dash.id === tab.title;
+        return dash.title === tab.title;
       }
       $scope.tabs = [];
 
