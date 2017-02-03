@@ -26,7 +26,7 @@
         ng-submit="filterResults()"
       >
         <div class="typeahead" kbn-typeahead="dashboard">
-          <div class="localSearch">
+          <div class="kuiLocalSearch">
             <span class="dashTitle"
               ng-show="dash.id"
               ng-bind="::dash.title"
@@ -39,13 +39,13 @@
               placeholder="Filter..."
               aria-label="Filter input"
               type="text"
-              class="localSearchInput"
+              class="kuiLocalSearchInput"
               ng-class="{'localSearchInput-isInvalid': queryInput.$invalid}"
             >
             <button
               type="submit"
               aria-label="Filter Dashboards"
-              class="localSearchButton"
+              class="kuiLocalSearchButton"
               ng-disabled="queryInput.$invalid"
             >
               <span class="fa fa-search" aria-hidden="true"></span>
