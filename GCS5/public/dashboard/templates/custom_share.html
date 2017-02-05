@@ -1,0 +1,56 @@
+<div class="kuiLocalDropdownPanels">
+  <!-- Right panel -->
+  <div class="kuiLocalDropdownPanel kuiLocalDropdownPanel--right">
+    <!-- Title -->
+    <div class="kuiLocalDropdownTitle">
+      Share
+    </div>
+
+    <!-- Link -->
+    <div class="kuiLocalDropdownSection">
+      <!-- Header -->
+      <div class="kuiLocalDropdownHeader">
+        <div class="kuiLocalDropdownHeader__label">
+          Link
+        </div>
+        <div class="kuiLocalDropdownHeader__actions">
+          <a
+            data-test-subj="sharedSnapshotShortUrlButton"
+            class="kuiLocalDropdownHeader__action"
+            ng-if="!share.urlFlags.shortSnapshot"
+            ng-click="share.toggleShortSnapshotUrl()"
+          >
+            Short URL
+          </a>
+
+          <a
+            class="kuiLocalDropdownHeader__action"
+            ng-if="share.urlFlags.shortSnapshot"
+            ng-click="share.toggleShortSnapshotUrl()"
+          >
+            Long URL
+          </a>
+
+          <a
+            data-test-subj="sharedSnapshotCopyButton"
+            class="kuiLocalDropdownHeader__action"
+            ng-click="share.copyToClipboard('#snapshotUrl')"
+          >
+            Copy
+          </a>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <input
+        data-test-subj="sharedSnapshotUrl"
+        id="snapshotUrl"
+        class="kuiLocalDropdownInput"
+        type="text"
+        readonly
+        value="{{share.urlFlags.shortSnapshot ? share.urls.shortSnapshot : share.urls.snapshot}}"
+      />
+
+    </div>
+  </div>
+</div>

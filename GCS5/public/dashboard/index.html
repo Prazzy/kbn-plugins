@@ -1,4 +1,6 @@
 <dashboard-app class="app-container dashboard-container">
+  <div id="sticky-anchor"></div>
+  <div id="sticky">
   <!-- Local nav. -->
   <kbn-top-nav name="dashboard" config="topNavMenu">
     <!-- Transcluded elements. -->
@@ -26,7 +28,7 @@
         ng-submit="filterResults()"
       >
         <div class="typeahead" kbn-typeahead="dashboard">
-          <div class="localSearch">
+          <div class="kuiLocalSearch">
             <span class="dashTitle"
               ng-show="dash.id"
               ng-bind="::dash.title"
@@ -39,13 +41,13 @@
               placeholder="Filter..."
               aria-label="Filter input"
               type="text"
-              class="localSearchInput"
+              class="kuiLocalSearchInput"
               ng-class="{'localSearchInput-isInvalid': queryInput.$invalid}"
             >
             <button
               type="submit"
               aria-label="Filter Dashboards"
-              class="localSearchButton"
+              class="kuiLocalSearchButton"
               ng-disabled="queryInput.$invalid"
             >
               <span class="fa fa-search" aria-hidden="true"></span>
@@ -59,10 +61,9 @@
 
   <!-- Filters. -->
   <filter-bar state="state"></filter-bar>
-
+  </div>
   <div ng-show="!state.panels.length" class="text-center start-screen">
-    <h2>Ready to get started?</h2>
-    <p>Click the <a class="btn btn-xs navbtn-inverse" ng-click="kbnTopNav.open('add'); toggleAddVisualization = !toggleAddVisualization" aria-label="Add visualization">Add</a> button in the menu bar above to add a visualization to the dashboard. <br/>If you haven't setup a visualization yet visit the <a href="#/visualize" title="Visualize">"Visualize"</a> tab to create your first visualization.</p>
+    <h2>No Dashboards Found</h2>
   </div>
 
   <dashboard-grid></dashboard-grid>

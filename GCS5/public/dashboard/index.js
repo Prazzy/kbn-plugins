@@ -8,7 +8,7 @@ import 'ui/notify';
 import 'ui/typeahead';
 import 'ui/share';
 import 'plugins/kibana/dashboard/directives/grid';
-import 'plugins/kibana/dashboard/components/panel/panel';
+import 'plugins/kibana/dashboard/directives/dashboard_panel';
 import 'plugins/kibana/dashboard/services/saved_dashboards';
 import 'plugins/GCS5/dashboard/styles/main.less';
 import FilterBarQueryFilterProvider from 'ui/filter_bar/query_filter';
@@ -17,6 +17,7 @@ import stateMonitorFactory  from 'ui/state_management/state_monitor_factory';
 import uiRoutes from 'ui/routes';
 import uiModules from 'ui/modules';
 import indexTemplate from 'plugins/GCS5/dashboard/index.html';
+import shareTemplate from 'plugins/GCS5/dashboard/templates/custom_share.html';
 
 require('ui/saved_objects/saved_object_registry').register(require('plugins/kibana/dashboard/services/saved_dashboard_register'));
 
@@ -53,6 +54,37 @@ uiRoutes
   }
 });
 
+uiModules.get('kibana').config(function ($provide) {
+  $provide.decorator('shareDirective', function($delegate, $controller, $timeout) {
+    let directive = $delegate[0];
+    directive.template = shareTemplate;
+    let link = directive.link;
+    directive.compile = function() {
+      return function (scope, element, attrs) {
+        $timeout(function() {
+          scope.share.toggleShortSnapshotUrl();
+        }, 0);
+      };
+    };
+    return $delegate;
+  });
+});
+
+uiModules.get('kibana').config(function ($provide) {
+  $provide.decorator('appSwitcherDirective', function ($delegate, $controller) {
+    let directive = $delegate[0];
+    let controllerName = directive.controller;
+    directive.controller = function($scope, $timeout) {
+      angular.extend(this, $controller(controllerName, {$scope: $scope}));
+
+      $timeout(function() {
+        $scope.switcher.links = [];
+      }, 0);
+    };
+    return $delegate;
+  });
+});
+
 app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter, kbnUrl) {
   return {
     restrict: 'E',
@@ -67,9 +99,29 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
 
       const dash = $scope.dash = $route.current.locals.dash;
 
+      // PAC Feature: code for filter and search bar lock
+      function sticky_relocate() {
+        let window_top = $(window).scrollTop();
+        let div_top = $('#sticky-anchor').offset().top;
+        if (window_top > div_top) {
+          $('#sticky').addClass('stick');
+          $('#sticky-anchor').height($('#sticky').outerHeight());
+        } else {
+          $('#sticky').removeClass('stick');
+          $('#sticky-anchor').height(0);
+        }
+      }
+
+      $(function () {
+        $(window).scroll(sticky_relocate);
+        sticky_relocate();
+      });
+      // PAC Feature: code for filter and search bar lock    
+
+
       // PAC Feature: custom menu tabs showing dashboards 
       $scope.isActiveTab = function (tab) {
-        return dash.id === tab.title;
+        return dash.title === tab.title;
       }
       $scope.tabs = [];
 
@@ -259,11 +311,13 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
         // PAC Feature: custom menu tabs showing dashboards 
         savedDashboards.find().then(function (params) {
             //var es_res = getDashList(params);
-            let es_res = [{
-                id: 'GCS5:dashboard1',
+            let subUrl = _.find($scope.chrome.getNavLinks(), {'id':'GCS5:dashboard'}).lastSubUrl;
+            $scope.chrome.setLastUrlFor(dash.title, subUrl);
+            let esRes = [{
+                id: 'Dashboard1',
                 title: 'Dashboard1',
                 order: 1,
-                url: `#/dashboard/Dashboard1`
+                url: `#/dashboard/dfd0b180-e9b4-11e6-af9c-133269a38460`
               },
               {
                 id: 'GCS5:dashboard2',
@@ -272,13 +326,20 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
                 url: `#/dashboard/Dashboard2`
               },
               {
-                id: 'GCS5:dashboard3',
+                id: 'Dashboard3',
                 title: 'Dashboard3',
                 order: 3,
-                url: `#/dashboard/Dashboard3`
+                url: `#/dashboard/e9b0c500-e9b4-11e6-af9c-133269a38460`
               }
-            ]  
-            $scope.tabs = es_res;
+            ]
+            _.map(esRes, function (res) {
+              if (res.title === dash.title) res.url = subUrl;
+              else {
+                let prevUrl = $scope.chrome.getLastUrlFor(res.title);
+                if (prevUrl) res.url = prevUrl;
+              }
+            });  
+            $scope.tabs = esRes;
 
             // var dashboard_array = [];
             // es_res.forEach(function (row) {
