@@ -310,7 +310,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
           $scope.map1.removeControl($scope.controlLayers);
           delete $scope.controlLayers;
         } 
-        if ($scope.vis.params.beam.enabled) {
+        if ($scope.vis.params.beam_enabled) {
           // get beam names
           const kmlSourceIndexName = $scope.vis.params.beam.index;
           const beamNames = ["MTNPAC_AFR1_APS7",
