@@ -17,3 +17,8 @@
     padding: 2px;
     font-size: 14px;
 }
+
+.leaflet-control-layers-expanded {
+  height: 300px;
+  overflow: auto;
+}
