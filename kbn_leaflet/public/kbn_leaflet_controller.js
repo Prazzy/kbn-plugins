@@ -354,7 +354,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
         if ($scope.vis.params.beam_enabled) {
           // get beam names
           const kmlSourceIndexName = $scope.vis.params.beam.index;
-          const beamNames = _.uniq(beams.split(',')); 
+          const beamNames = _.compact(_.uniq(beams.split(','))); 
           $scope.controlLayers = L.control.layers(null, [], { collapsed: true }).addTo(map1);
           const highlightStyle = {
               weight: 2,
