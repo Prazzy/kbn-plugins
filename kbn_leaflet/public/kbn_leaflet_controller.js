@@ -12,18 +12,8 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
   var filterManager = Private(require('ui/filter_manager'));
   var SearchSource = Private(require('ui/courier/data_source/search_source'));
 
-  $scope.filter = function (item) {
-      // Add a new filter via the filter manager
-      filterManager.add(
-          // The field to filter for, we can get it from the config
-          $scope.vis.aggs.bySchemaName['segment'][0].params.field,
-          // The value to filter for, we will read out the bucket key from the tag
-          item,
-          // Whether the filter is negated. If you want to create a negated filter pass '-' here
-          null,
-          // The index pattern for the filter
-          $scope.vis.indexPattern.title
-      );
+  $scope.filter = function (value) {
+    filterManager.add($scope.vis.params.filterField, value, null, $scope.vis.indexPattern.title);
   };
 
   var chart_width, chart_height;
@@ -148,6 +138,10 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
     });
   };
 
+  var markerOnClick = function (e) {
+    if ($scope.vis.params.filterField) $scope.filter(e.target.options[$scope.vis.params.filterField]);
+  };
+
   $scope.$watch('esResponse', function (resp) {
     // if no response
     if (!resp) return;
@@ -206,7 +200,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
       //}())
       //    .addTo(map1);
 
-      let beams = [];
+      let beams = '';
       if (map_type === "Marker Cluster") {
         try {
           if ($scope.map1 && $scope.markers.getLayers()) $scope.markers.clearLayers();
@@ -242,8 +236,11 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
 
         _.each(searchResp.hits.hits, function (hit, i) {
           var es_src = hit['_source'];
-          if (hit.beams) beams.push(hit.beams.split(','));
-          var tooltip_text = "";
+          if (es_src.Beams) beams += es_src.Beams + ',';
+          var filterField = $scope.vis.params.filterField;
+          var filterValue = '';
+          if (filterField) filterValue = es_src[filterField];
+          var tooltip_text = '';
           _.each(tooltip_fields, function (field) {
               tooltip_text += field + " : " + es_src[field] + "<br />";
           });
@@ -252,53 +249,97 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
             var map_json_data = $.parseJSON(es_src.data);
             // switch markers
             _.each(map_json_data.switchmarkers, function (marker_i, i) {
+                var markerOptions = {icon: tealIcon};
+                markerOptions[filterField] = filterValue;
                 var tooltip_content = tooltip_text + marker_i.content;
-                var switchMarker = L.marker([marker_i.latitude, marker_i.longitude], {icon: tealIcon}).addTo(map1);
+                var switchMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions).on('click', markerOnClick).addTo(map1);
                 switchMarker.bindPopup(tooltip_content, {maxWidth: 500});
+                switchMarker.on('mouseover', function (e) {
+                  this.openPopup();
+                });
+                switchMarker.on('mouseout', function (e) {
+                  this.closePopup();
+                });
                 $scope.switchMarkers.push(switchMarker);
             });
 
             // down markers
             _.each(map_json_data.downmarkers, function (marker_i, i) {
+                var markerOptions = {icon: orangeIcon};
+                markerOptions[filterField] = filterValue;
                 var tooltip_content = tooltip_text + marker_i.content;
-                var offlineMarker = L.marker([marker_i.latitude, marker_i.longitude], {icon: orangeIcon}).addTo(map1);
+                var offlineMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions).on('click', markerOnClick).addTo(map1);
                 offlineMarker.bindPopup(tooltip_content, {maxWidth: 500});
+                offlineMarker.on('mouseover', function (e) {
+                  this.openPopup();
+                });
+                offlineMarker.on('mouseout', function (e) {
+                  this.closePopup();
+                });
                 $scope.offlineMarkers.push(offlineMarker);
             });
 
             // online markers
             _.each(map_json_data.offtoonmarkers, function (marker_i, i) {
+                var markerOptions = {icon: yellowIcon};
+                markerOptions[filterField] = filterValue;
                 var tooltip_content = tooltip_text + marker_i.content;
-                var onlineMarker = L.marker([marker_i.latitude, marker_i.longitude], {icon: yellowIcon}).addTo(map1);
+                var onlineMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions).on('click', markerOnClick).addTo(map1);
                 onlineMarker.bindPopup(tooltip_content, {maxWidth: 500});
+                onlineMarker.on('mouseover', function (e) {
+                  this.openPopup();
+                });
+                onlineMarker.on('mouseout', function (e) {
+                  this.closePopup();
+                });
                 $scope.onlineMarkers.push(onlineMarker);
             });
 
             // first marker
-            var firstMarker = L.marker([map_json_data.markers[0].latitude, map_json_data.markers[0].longitude], {icon: greenIcon}).addTo(map1);
+            var markerOptions = {icon: greenIcon};
+            markerOptions[filterField] = filterValue;
+            var firstMarker = L.marker([map_json_data.markers[0].latitude, map_json_data.markers[0].longitude], markerOptions).on('click', markerOnClick).addTo(map1);
             var tooltip_content = tooltip_text + map_json_data.markers[0].content;
             firstMarker.bindPopup(tooltip_content, {maxWidth: 500});
+            firstMarker.on('mouseover', function (e) {
+              this.openPopup();
+            });
+            firstMarker.on('mouseout', function (e) {
+              this.closePopup();
+            });
             $scope.firstMarkers.push(firstMarker);
 
             // last marker
             if (es_src.InFlight) {
+              var markerOptions = {icon: airplaneIcon};
+              markerOptions[filterField] = filterValue;
               var lastMarker = L.marker([map_json_data.markers[map_json_data.markers.length - 1].latitude, 
-                map_json_data.markers[map_json_data.markers.length - 1].longitude], { icon: airplaneIcon }).addTo(map1); 
-            } else { 
+                map_json_data.markers[map_json_data.markers.length - 1].longitude], markerOptions).on('click', markerOnClick).addTo(map1); 
+            } else {
+              var markerOptions = {icon: redIcon};
+              markerOptions[filterField] = filterValue;
               var lastMarker = L.marker([map_json_data.markers[map_json_data.markers.length - 1].latitude, 
-                map_json_data.markers[map_json_data.markers.length - 1].longitude], { icon: redIcon }).addTo(map1);
-            }                        
+                map_json_data.markers[map_json_data.markers.length - 1].longitude], markerOptions).on('click', markerOnClick).addTo(map1);
+            }                      
             var tooltip_content = tooltip_text + map_json_data.markers[map_json_data.markers.length - 1].content;
             lastMarker.bindPopup(tooltip_content, {maxWidth: 500});
+            lastMarker.on('mouseover', function (e) {
+              this.openPopup();
+            });
+            lastMarker.on('mouseout', function (e) {
+              this.closePopup();
+            });
             $scope.lastMarkers.push(lastMarker);
 
             // polylines
             _.each(map_json_data.polylines, function (polyline, i) {
-                var line = L.polyline(polyline.marker, {
+                var polylineOptions = {
                     color: polyline.color,
                     opacity: polyline.opacity,
                     weight: polyline.weight
-                }).addTo(map1);
+                };
+                polylineOptions[filterField] = filterValue;
+                var line = L.polyline(polyline.marker, polylineOptions).on('click', markerOnClick).addTo(map1);
                 $scope.polyList.push(line);
             });
           }
@@ -313,20 +354,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
         if ($scope.vis.params.beam_enabled) {
           // get beam names
           const kmlSourceIndexName = $scope.vis.params.beam.index;
-          const beamNames = ["MTNPAC_AFR1_APS7",
-                              "MTNPAC_AG1_T01",
-                              "MTNPAC_APS6_T01",
-                              "MTNPAC_BRW1_GE23SEP_NPH7NSEPV7N",
-                              "MTNPAC_BRW2_GE23NP",
-                              "MTNPAC_BRW2_GE23SWP",
-                              "MTNPAC_BUR3_W2A_D2VH_F1VH_NET3",
-                              "MTNPAC_COL1_IS14",
-                              "MTNPAC_COL1_T11NCA",
-                              "MTNPAC_DUB1_A5",
-                              "MTNPAC_GE23SP_T01",
-                              "MTNPAC_HKG2_SC2",
-                              "MTNPAC_HOL8_T11N_K11BVH_K35VH_NET11",
-                              "MTNPAC_IS15_T01"]; 
+          const beamNames = _.uniq(beams.split(',')); 
           $scope.controlLayers = L.control.layers(null, [], { collapsed: true }).addTo(map1);
           const highlightStyle = {
               weight: 2,
@@ -342,7 +370,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
 
             $http.post('../api/kbn_leaflet/geojson', params)
             .then(function (resp) {
-              if (resp.data) {
+              if (resp.data.length > 0) {
                 let geojson_data = JSON.parse(resp.data[0]._source.GeoJSON);
                 let beamLayer = L.geoJson(geojson_data, {
                   onEachFeature: function (feature, layer) {
