@@ -20,10 +20,10 @@ function KbnLeafletProvider(Private, config) {
       params: {
 				editor: require('plugins/kbn_leaflet/kbn_leaflet_editor.html'), // Use this HTML as an options editor for this vis
 				defaults: { // Set default values for paramters (that can be configured in the editor)
-                    size: 100,
-                    map_type: 'Marker Cluster'
+          size: 100,
+          map_type: 'Marker Cluster'
 				},
-                canDesaturate: !supports.cssFilters
+        canDesaturate: !supports.cssFilters
 			},
       schemas: new Schemas([
         {
