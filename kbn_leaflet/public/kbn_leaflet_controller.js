@@ -2,6 +2,7 @@
 require('jquery');
 var L = require('leaflet');
 require('./bower_components/leaflet_js/leaflet.markercluster');
+require('./bower_components/leaflet_js/leaflet.rotatedMarker.js');
 require('./bower_components/leaflet_js/mq-map');
 require('./bower_components/leaflet_js/MarkerCluster.Default.css');
 
@@ -133,7 +134,8 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
     });
 
     airplaneIcon = L.icon({
-      iconUrl: '../plugins/kbn_leaflet/images/airplane.png',
+      iconUrl: '../plugins/kbn_leaflet/images/plane.png',
+      iconSize: [29, 24],
       iconAnchor: [10, 30],
     });
   };
@@ -251,7 +253,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
             _.each(map_json_data.switchmarkers, function (marker_i, i) {
                 var markerOptions = {icon: tealIcon};
                 markerOptions[filterField] = filterValue;
-                var tooltip_content = tooltip_text + marker_i.content;
+                var tooltip_content = '<div style="background-color:#c4f3e9"><div style="border-bottom:1px solid"><b>Beam Switch Marker</b></div>' + tooltip_text + marker_i.content + '</div>';
                 var switchMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions).on('click', markerOnClick).addTo(map1);
                 switchMarker.bindPopup(tooltip_content, {maxWidth: 500});
                 switchMarker.on('mouseover', function (e) {
@@ -267,7 +269,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
             _.each(map_json_data.downmarkers, function (marker_i, i) {
                 var markerOptions = {icon: orangeIcon};
                 markerOptions[filterField] = filterValue;
-                var tooltip_content = tooltip_text + marker_i.content;
+                var tooltip_content = '<div style="background-color:#f1b65a"><div style="border-bottom:1px solid"><b>Offline Marker</b><br></div>' + tooltip_text + marker_i.content;
                 var offlineMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions).on('click', markerOnClick).addTo(map1);
                 offlineMarker.bindPopup(tooltip_content, {maxWidth: 500});
                 offlineMarker.on('mouseover', function (e) {
@@ -283,7 +285,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
             _.each(map_json_data.offtoonmarkers, function (marker_i, i) {
                 var markerOptions = {icon: yellowIcon};
                 markerOptions[filterField] = filterValue;
-                var tooltip_content = tooltip_text + marker_i.content;
+                var tooltip_content = '<div style="background-color:#73ca71"><div style="border-bottom:1px solid"><b>Online Marker</b><br></div>' + tooltip_text + marker_i.content;
                 var onlineMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions).on('click', markerOnClick).addTo(map1);
                 onlineMarker.bindPopup(tooltip_content, {maxWidth: 500});
                 onlineMarker.on('mouseover', function (e) {
@@ -299,7 +301,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
             var markerOptions = {icon: greenIcon};
             markerOptions[filterField] = filterValue;
             var firstMarker = L.marker([map_json_data.markers[0].latitude, map_json_data.markers[0].longitude], markerOptions).on('click', markerOnClick).addTo(map1);
-            var tooltip_content = tooltip_text + map_json_data.markers[0].content;
+            var tooltip_content = '<div style="background-color:#16d86a"><div style="border-bottom:1px solid"><b>Start Marker</b><br></div>' + tooltip_text + map_json_data.markers[0].content;
             firstMarker.bindPopup(tooltip_content, {maxWidth: 500});
             firstMarker.on('mouseover', function (e) {
               this.openPopup();
@@ -312,6 +314,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
             // last marker
             if (es_src.InFlight) {
               var markerOptions = {icon: airplaneIcon};
+              if (es_src.heading) markerOptions['rotationAngle'] = es_src.heading;
               markerOptions[filterField] = filterValue;
               var lastMarker = L.marker([map_json_data.markers[map_json_data.markers.length - 1].latitude, 
                 map_json_data.markers[map_json_data.markers.length - 1].longitude], markerOptions).on('click', markerOnClick).addTo(map1); 
@@ -321,7 +324,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
               var lastMarker = L.marker([map_json_data.markers[map_json_data.markers.length - 1].latitude, 
                 map_json_data.markers[map_json_data.markers.length - 1].longitude], markerOptions).on('click', markerOnClick).addTo(map1);
             }                      
-            var tooltip_content = tooltip_text + map_json_data.markers[map_json_data.markers.length - 1].content;
+            var tooltip_content = '<div style="background-color:#ea5345"><div style="border-bottom:1px solid"><b>End Marker</b><br></div>' + tooltip_text + map_json_data.markers[map_json_data.markers.length - 1].content;
             lastMarker.bindPopup(tooltip_content, {maxWidth: 500});
             lastMarker.on('mouseover', function (e) {
               this.openPopup();
