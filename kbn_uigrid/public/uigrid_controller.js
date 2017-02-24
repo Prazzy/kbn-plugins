@@ -5,7 +5,8 @@ define(function (require) {
   require('./lib/ui-grid.min.css');
   require('./lib/ui-grid.min');
 
-  var module = require('ui/modules').get('kbn_uigrid', ['kibana', 'ngTouch', 'ui.grid', 'ui.grid.autoResize', 'ui.grid.resizeColumns', 'ui.grid.moveColumns']);
+  var module = require('ui/modules').get('kbn_uigrid', ['kibana', 'ngTouch', 'ui.grid', 'ui.grid.autoResize', 'ui.grid.resizeColumns', 'ui.grid.moveColumns',
+    'ui.grid.selection', 'ui.grid.exporter']);
 
   module.controller('KbnUIGridController', function ($scope, $element, $rootScope, Private) {
     var filterManager = Private(require('ui/filter_manager'));
@@ -61,32 +62,16 @@ define(function (require) {
 
     $scope.data = [];
     $scope.gridOptions = {
-      enableSorting: true
+      enableSorting: true,
+      enableGridMenu: true,
+      enableSelectAll: true,
+      exporterCsvFilename: 'myFile.csv',
+      onRegisterApi: function(gridApi){
+        $scope.gridApi = gridApi;
+      }
     };
 
     $scope.$watch('esResponse', function (resp) {
-      //  $scope.myData = [
-      //     {
-      //         "firstName": "Cox",
-      //         "lastName": "Carney",
-      //         "company": "Enormo",
-      //         "employed": true
-      //     },
-      //     {
-      //         "firstName": "Lorraine",
-      //         "lastName": "Wise",
-      //         "company": "Comveyer",
-      //         "employed": false
-      //     },
-      //     {
-      //         "firstName": "Nancy",
-      //         "lastName": "Waters",
-      //         "company": "Fuelton",
-      //         "employed": false
-      //     }
-      // ];
-      // _updateDimensions();
-
       if (!resp) {
           return;
       }
