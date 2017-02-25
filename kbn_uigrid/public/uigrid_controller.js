@@ -12,18 +12,8 @@ define(function (require) {
     var filterManager = Private(require('ui/filter_manager'));
     var SearchSource = Private(require('ui/courier/data_source/search_source'));
 
-    $scope.filter = function (item) {
-        // Add a new filter via the filter manager
-        filterManager.add(
-            // The field to filter for, we can get it from the config
-            $scope.vis.aggs.bySchemaName['segment'][0].params.field,
-            // The value to filter for, we will read out the bucket key from the tag
-            item,
-            // Whether the filter is negated. If you want to create a negated filter pass '-' here
-            null,
-            // The index pattern for the filter
-            $scope.vis.indexPattern.title
-        );
+    $scope.filter = function (field, value) {
+      filterManager.add(field, value, null, $scope.vis.indexPattern.title);
     };
 
     var chart_width, chart_height;
@@ -60,13 +50,19 @@ define(function (require) {
         _updateDimensions();
     });
 
+    $scope.addFilter = function(row, col){
+      let cellValue = row.grid.getCellValue(row, col);
+      $scope.filter(col.field, cellValue);
+    };
+
     $scope.data = [];
     $scope.gridOptions = {
       enableSorting: true,
       enableGridMenu: true,
       enableSelectAll: true,
-      exporterCsvFilename: 'myFile.csv',
       exporterMenuPdf: false,
+      gridMenuShowHideColumns: false,
+      exporterCsvFilename: 'download.csv',
       onRegisterApi: function(gridApi){
         $scope.gridApi = gridApi;
       }
@@ -83,10 +79,10 @@ define(function (require) {
       mapSearchSource.size(10000);
       mapSearchSource.index($scope.vis.indexPattern);
       mapSearchSource.onResults().then(function onResults(searchResp) {
-          // $scope.columns = [];
-          // _.each(_.keys(searchResp.hits.hits[0]['_source']), function (field, j) {
-          //     $scope.columns.push({id: field, name: field, field: field});
-          // });
+          _.each(_.keys(searchResp.hits.hits[0]['_source']), function (field, j) {
+              $scope.gridOptions.columnDefs.push({id: field, name: field, enableColumnMenu: false,
+              cellTemplate:'<div class="ui-grid-cell-contents" ng-click="grid.appScope.addFilter(row, col)">{{COL_FIELD CUSTOM_FILTERS}}</div>'});
+          });
 
           let data = [];
           _.each(searchResp.hits.hits, function (hit, i) {
