@@ -66,6 +66,7 @@ define(function (require) {
       enableGridMenu: true,
       enableSelectAll: true,
       exporterCsvFilename: 'myFile.csv',
+      exporterMenuPdf: false,
       onRegisterApi: function(gridApi){
         $scope.gridApi = gridApi;
       }
