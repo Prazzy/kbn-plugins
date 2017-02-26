@@ -2,6 +2,9 @@
 	<div>
         <label>Click any cell to create a filter.</label>
     </div>
-    <div id="grid1" ui-grid="gridOptions" class="myGrid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-exporter></div>
+    <span ng-if="gridOptions">
+	    <div ng-if="vis.params.enableAutoFitColumns" id="uigrid_{{$id}}" ui-grid="gridOptions" class="myGrid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-auto-fit-columns ui-grid-move-columns ui-grid-selection ui-grid-exporter ui-grid-pagination></div>
+	    <div ng-if="!vis.params.enableAutoFitColumns" id="uigrid_{{$id}}" ui-grid="gridOptions" class="myGrid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-exporter ui-grid-pagination></div>
+    </span>
 </div>
 
