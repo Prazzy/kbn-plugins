@@ -10,9 +10,10 @@ define(function (require) {
   var module = require('ui/modules').get('kbn_uigrid', ['kibana', 'ngTouch', 'ui.grid', 'ui.grid.autoFitColumns', 'ui.grid.autoResize', 'ui.grid.resizeColumns', 'ui.grid.moveColumns',
     'ui.grid.selection', 'ui.grid.exporter', 'ui.grid.pagination', 'ngSanitize', 'ui.bootstrap']);
 
-  module.controller('KbnUIGridController', function ($scope, $element, $rootScope, Private, $route) {
+  module.controller('KbnUIGridController', function ($scope, $element, $rootScope, Private, $route, config, Notifier) {
     var filterManager = Private(require('ui/filter_manager'));
     var SearchSource = Private(require('ui/courier/data_source/search_source'));
+    var notify = new Notifier();
 
     $scope.columns = [];
     if ($route.current.locals.savedVis.savedSearch) { 
@@ -139,6 +140,62 @@ define(function (require) {
       });
       searchSource.fetchQueued();
     });
+
+    $scope.exportAsCsv = function () {
+      debugger;
+      $scope.showSpinner = true;
+      var searchSource = new SearchSource();
+      searchSource.set('filter', searchSource.getOwn('filter')); 
+      searchSource.set('query', searchSource.getOwn('query'));
+      searchSource.size(10000);
+      searchSource.index($scope.vis.indexPattern);
+      searchSource.onResults().then(function onResults(resp) {
+
+        // Abort if something changed
+        //if ($scope.searchSource !== $scope.searchSource) return;
+        debugger;  
+        var csv = new Blob([$scope.toCsv(true, resp.hits.hits)], { type: 'text/plain' });
+        $scope.showSpinner = false;
+        $scope._saveAs(csv, 'download.csv');
+
+      }).catch(notify.fatal);
+      searchSource.fetchQueued();
+    };
+
+    $scope._saveAs = require('@spalger/filesaver').saveAs;
+    $scope.csv = {
+      separator: config.get('csv:separator'),
+      quoteValues: config.get('csv:quoteValues')
+    };
+
+    $scope.toCsv = function (formatted, rows) {
+      var csv = [];
+      //var rows = $scope.hits;
+      var columns = $scope.columns;
+      var nonAlphaNumRE = /[^a-zA-Z0-9]/;
+      var allDoubleQuoteRE = /"/g;
+
+      function escape(val) {
+        if (!formatted && _.isObject(val)) val = val.valueOf();
+        val = String(val);
+        if ($scope.csv.quoteValues && nonAlphaNumRE.test(val)) {
+          val = '"' + val.replace(allDoubleQuoteRE, '""') + '"';
+        }
+        return val;
+      }
+
+      csv.push(_.map(columns, function (col) {
+        return escape(col);
+      }).join(","));
+
+      _.forEach(rows, function (row) {
+        //row = $scope.indexPattern.formatHit(row);
+        csv.push(_.map(columns, function (col) {
+          return escape(row._source[col]);
+        }).join(","));
+      });
+      return csv.join("\r\n") + "\r\n";
+    };
   });
 });
 

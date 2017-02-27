@@ -1,10 +1,18 @@
 <div ng-controller="KbnUIGridController">
-	<div>
-        <label>Click any cell to create a filter.</label>
-    </div>
-    <span ng-if="gridOptions">
-	    <div ng-if="vis.params.enableAutoFitColumns" id="uigrid_{{$id}}" ui-grid="gridOptions" class="myGrid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-auto-fit-columns ui-grid-move-columns ui-grid-selection ui-grid-exporter ui-grid-pagination></div>
-	    <div ng-if="!vis.params.enableAutoFitColumns" id="uigrid_{{$id}}" ui-grid="gridOptions" class="myGrid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-exporter ui-grid-pagination></div>
-    </span>
+	<div style="padding-bottom: 5px;"> 
+		<a class="medium" ng-click="exportAsCsv()">
+      Export <i aria-hidden="true" class="fa fa-download"></i> 
+  	</a> (Upto 50k Rows) 
+		<span class="pull-right text-info hintbox-label">
+		  <label>Click any cell to create a filter.</label>
+		</span>       
+		<span ng-show="showSpinner" class="spinner"></span>
+  </div>
+  <div>
+  <span ng-if="gridOptions">
+    <div ng-if="vis.params.enableAutoFitColumns" id="uigrid_{{$id}}" ui-grid="gridOptions" class="myGrid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-auto-fit-columns ui-grid-move-columns ui-grid-selection ui-grid-exporter ui-grid-pagination></div>
+    <div ng-if="!vis.params.enableAutoFitColumns" id="uigrid_{{$id}}" ui-grid="gridOptions" class="myGrid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-exporter ui-grid-pagination></div>
+  </span>
+  </div>
 </div>
 
