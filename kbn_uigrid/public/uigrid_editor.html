@@ -3,6 +3,38 @@
     <input type="checkbox"
     name="enableAutoFitColumns"
     ng-model="vis.params.enableAutoFitColumns"> 
-    enableAutoFitColumns
+    Enable Auto Fit Columns <kbn-info info="Use this option for large number of columns"></kbn-info>
   </label>
+</div>
+<div class="form-group">
+  <label>
+    <input type="checkbox"
+    ng-model="vis.params.enableSorting"
+    ng-checked="vis.params.enableSorting"> 
+    Enable Sorting
+  </label>
+</div>
+<div class="form-group">
+  <label>
+    <input type="checkbox"
+    ng-model="vis.params.enableColumnResizing"
+    ng-checked="vis.params.enableColumnResizing"> 
+    Enable Column Resizing
+  </label>
+</div>
+<div class="form-group">
+  <label>
+    <input type="checkbox"
+    ng-model="vis.params.enableGridMenu"
+    ng-checked="vis.params.enableGridMenu"> 
+    Enable Grid Menu
+  </label>
+</div>
+<div class="form-group">
+  <label>Pagination Page Size</label>
+  <input type="text" ng-model="vis.params.paginationPageSize" class="form-control" placeholder="500">
+</div>
+<div class="form-group">
+  <label>Exporter CSV Filename</label>
+  <input type="text" ng-model="vis.params.exporterCsvFilename" class="form-control" placeholder="download.csv">
 </div>

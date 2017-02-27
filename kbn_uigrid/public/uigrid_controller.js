@@ -5,13 +5,20 @@ define(function (require) {
   require('./lib/ui-grid.min.css');
   require('./lib/ui-grid.min');
   require('./lib/autoFitColumns.min');
+  require('ui/doc_viewer');
 
   var module = require('ui/modules').get('kbn_uigrid', ['kibana', 'ngTouch', 'ui.grid', 'ui.grid.autoFitColumns', 'ui.grid.autoResize', 'ui.grid.resizeColumns', 'ui.grid.moveColumns',
-    'ui.grid.selection', 'ui.grid.exporter', 'ui.grid.pagination']);
+    'ui.grid.selection', 'ui.grid.exporter', 'ui.grid.pagination', 'ngSanitize', 'ui.bootstrap']);
 
-  module.controller('KbnUIGridController', function ($scope, $element, $rootScope, Private) {
+  module.controller('KbnUIGridController', function ($scope, $element, $rootScope, Private, $route) {
     var filterManager = Private(require('ui/filter_manager'));
     var SearchSource = Private(require('ui/courier/data_source/search_source'));
+
+    $scope.columns = [];
+    if ($route.current.locals.savedVis.savedSearch) { 
+      $scope.columns = $route.current.locals.savedVis.savedSearch.columns;
+      $scope.columns = _.difference($scope.columns, $scope.vis.indexPattern.metaFields)
+    } 
 
     $scope.filter = function (field, value) {
       filterManager.add(field, value, null, $scope.vis.indexPattern.title);
@@ -61,60 +68,76 @@ define(function (require) {
       $scope.filter(col.field, cellValue);
     };
 
-    //$scope.data = [];
-    //$scope.vis.params.enableAutoFitColumns = false;
-    //$scope.gridOptions = {};
+    // $scope.vis.params.enableSorting = true;
+    // $scope.vis.params.enableColumnResizing = true;
+    // $scope.vis.params.enableGridMenu = true;
+    // $scope.vis.params.exporterCsvFilename = 'download.csv';
+    // $scope.vis.params.paginationPageSize = 500;
+
     $scope.$watch('esResponse', function (resp) {
       if (!resp) {
           return;
       }
 
-      // let gridId = $('#uigrid_' + $scope.$id);
-      // if (gridId) {
-        //gridId.remove(); 
-      if ($scope.gridOptions) delete $scope.gridOptions;
-      $scope.gridOptions = {
-        paginationPageSizes: [25, 50, 100, 200, 500],
-        paginationPageSize: 500,
-        enableSorting: true,
-        enableColumnResizing: true,
-        enableGridMenu: true,
-        enableSelectAll: true,
-        exporterMenuPdf: false,
-        gridMenuShowHideColumns: false,
-        //showGridFooter: true,
-        //enableAutoFitColumns: false,
-        exporterCsvFilename: 'download.csv',
-        onRegisterApi: function(gridApi){
-          $scope.gridApi = gridApi;
-        },
-        columnDefs: [],
-        data: []
-      };
-      //} 
-      //if (!_.isUndefined($scope.vis.params.enableAutoFitColumns)) $scope.gridOptions.enableAutoFitColumns = $scope.vis.params.enableAutoFitColumns;
+      if ($scope.gridOptions && $scope.vis.params.enableAutoFitColumns) delete $scope.gridOptions;
+      if (!$scope.gridOptions) {
+        $scope.gridOptions = {
+          paginationPageSizes: [25, 50, 100, 200, 500],
+          // paginationPageSize: $scope.vis.params.paginationPageSize,
+          // enableSorting: $scope.vis.params.enableSorting,
+          // enableColumnResizing: $scope.vis.params.enableColumnResizing,
+          // enableGridMenu: $scope.vis.params.enableGridMenu,
+          enableSelectAll: true,
+          exporterMenuPdf: false,
+          gridMenuShowHideColumns: false,
+          //showGridFooter: true,
+          //exporterCsvFilename: $scope.vis.params.exporterCsvFilename,
+          onRegisterApi: function(gridApi){
+            $scope.gridApi = gridApi;
+          },
+          columnDefs: [],
+          data: []
+        };
+      }
+      $scope.gridOptions.paginationPageSize = parseInt($scope.vis.params.paginationPageSize);
+      $scope.gridOptions.enableSorting = $scope.vis.params.enableSorting;
+      $scope.gridOptions.enableColumnResizing = $scope.vis.params.enableColumnResizing;
+      $scope.gridOptions.enableGridMenu = $scope.vis.params.enableGridMenu;
+      $scope.gridOptions.exporterCsvFilename = $scope.vis.params.exporterCsvFilename;
 
-      var mapSearchSource = new SearchSource();
-      mapSearchSource.set('filter', mapSearchSource.getOwn('filter'));
-      mapSearchSource.set('query', mapSearchSource.getOwn('query'));
-      mapSearchSource.size(10);
-      mapSearchSource.index($scope.vis.indexPattern);
-      mapSearchSource.onResults().then(function onResults(searchResp) {
+      var searchSource = new SearchSource();
+      searchSource.set('filter', searchSource.getOwn('filter'));
+      searchSource.set('query', searchSource.getOwn('query'));
+      searchSource.size(10);
+      searchSource.index($scope.vis.indexPattern);
+      //searchSource.index($scope.searchSource.get('index'));
+      searchSource.onResults().then(function onResults(searchResp) {
         // let colsSize = _.keys(searchResp.hits.hits[0]['_source']).length;
         // let colWidth = $scope.getColWidth(colsSize);
-        _.each(_.keys(searchResp.hits.hits[0]['_source']), function (field, j) {
-            $scope.gridOptions.columnDefs.push({id: field, name: field, enableColumnMenu: false, displayName: field,
-            cellTemplate:'<div class="ui-grid-cell-contents" ng-click="grid.appScope.addFilter(row, col)">{{COL_FIELD CUSTOM_FILTERS}}</div>'});
-        });
+        if ($scope.columns) {
+          _.each($scope.columns, function (field, j) {
+              $scope.gridOptions.columnDefs.push({id: field, name: field, enableColumnMenu: false, displayName: field,
+              cellTemplate:require('plugins/kbn_uigrid/cell_template.html')});
+          });
+        } else {
+          _.each(_.keys(searchResp.hits.hits[0]['_source']), function (field, j) {
+              $scope.gridOptions.columnDefs.push({id: field, name: field, enableColumnMenu: false, displayName: field,
+              cellTemplate:require('plugins/kbn_uigrid/cell_template.html')});
+          });
+        }
 
         let data = [];
         _.each(searchResp.hits.hits, function (hit, i) {
-          data.push(hit['_source']);
+          if (_.intersection(_.keys(hit['_source']), $scope.columns).length > 0) {
+            hit = $scope.vis.indexPattern.formatHit(hit);
+            data.push(hit);
+            //data.push(hit['_source']);
+          }
         });
         $scope.gridOptions.data = data;
         _updateDimensions();
       });
-      mapSearchSource.fetchQueued();
+      searchSource.fetchQueued();
     });
   });
 });
