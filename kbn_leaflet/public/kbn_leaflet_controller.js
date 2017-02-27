@@ -254,7 +254,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
                 var markerOptions = {icon: tealIcon};
                 markerOptions[filterField] = filterValue;
                 var tooltip_content = '<div style="background-color:#c4f3e9"><div style="border-bottom:1px solid"><b>Beam Switch Marker</b></div>' + tooltip_text + marker_i.content + '</div>';
-                var switchMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions)//.on('click', markerOnClick).addTo(map1);
+                var switchMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions).addTo(map1);
                 switchMarker.bindPopup(tooltip_content, {maxWidth: 500});
                 // switchMarker.on('mouseover', function (e) {
                 //   this.openPopup();
@@ -270,7 +270,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
                 var markerOptions = {icon: orangeIcon};
                 markerOptions[filterField] = filterValue;
                 var tooltip_content = '<div style="background-color:#f1b65a"><div style="border-bottom:1px solid"><b>Offline Marker</b><br></div>' + tooltip_text + marker_i.content;
-                var offlineMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions)//.on('click', markerOnClick).addTo(map1);
+                var offlineMarker = L.marker([marker_i.latitude, marker_i.longitude], markerOptions).addTo(map1);
                 offlineMarker.bindPopup(tooltip_content, {maxWidth: 500});
                 // offlineMarker.on('mouseover', function (e) {
                 //   this.openPopup();
