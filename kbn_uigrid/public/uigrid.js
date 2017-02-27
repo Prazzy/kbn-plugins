@@ -1,5 +1,6 @@
 require('plugins/kbn_uigrid/uigrid.css');
 require('plugins/kbn_uigrid/uigrid_controller');
+require('plugins/kbn_uigrid/uigrid_editor');
 
 function KbnUIGridProvider(Private, config) {
     var TemplateVisType = Private(require('ui/template_vis_type/TemplateVisType'));
@@ -12,8 +13,9 @@ function KbnUIGridProvider(Private, config) {
         description: 'Angular UI Grid',
         template: require('plugins/kbn_uigrid/uigrid.html'),
         params: {
-            editor: require('plugins/kbn_uigrid/uigrid_editor.html'), // Use this HTML as an options editor for this vis
+            editor: '<uigrid-vis-params></uigrid-vis-params>', // Use this HTML as an options editor for this vis
             defaults: { // Set default values for paramters (that can be configured in the editor)
+              gridColumns: '',
               enableSorting: true,
               enableColumnResizing: true,
               enableGridMenu: true,

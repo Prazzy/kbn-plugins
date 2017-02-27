@@ -7,7 +7,7 @@ define(function (require) {
   require('./lib/autoFitColumns.min');
   require('ui/doc_viewer');
 
-  var module = require('ui/modules').get('kbn_uigrid', ['kibana', 'ngTouch', 'ui.grid', 'ui.grid.autoFitColumns', 'ui.grid.autoResize', 'ui.grid.resizeColumns', 'ui.grid.moveColumns',
+  var module = require('ui/modules').get('kibana/kbn_uigrid', ['kibana', 'ngTouch', 'ui.grid', 'ui.grid.autoFitColumns', 'ui.grid.autoResize', 'ui.grid.resizeColumns', 'ui.grid.moveColumns',
     'ui.grid.selection', 'ui.grid.exporter', 'ui.grid.pagination', 'ngSanitize', 'ui.bootstrap']);
 
   module.controller('KbnUIGridController', function ($scope, $element, $rootScope, Private, $route, config, Notifier) {
@@ -16,10 +16,13 @@ define(function (require) {
     var notify = new Notifier();
 
     $scope.columns = [];
-    if ($route.current.locals.savedVis.savedSearch) { 
+    if ($route.current.locals.savedVis) { 
       $scope.columns = $route.current.locals.savedVis.savedSearch.columns;
       $scope.columns = _.difference($scope.columns, $scope.vis.indexPattern.metaFields)
-    } 
+      if (!$scope.vis.params.gridColumns.length) $scope.vis.params.gridColumns = $scope.columns.join();
+    } else {
+      $scope.columns = $scope.vis.params.gridColumns.split(',');
+    }
 
     $scope.filter = function (field, value) {
       filterManager.add(field, value, null, $scope.vis.indexPattern.title);
@@ -142,7 +145,6 @@ define(function (require) {
     });
 
     $scope.exportAsCsv = function () {
-      debugger;
       $scope.showSpinner = true;
       var searchSource = new SearchSource();
       searchSource.set('filter', searchSource.getOwn('filter')); 
@@ -153,7 +155,6 @@ define(function (require) {
 
         // Abort if something changed
         //if ($scope.searchSource !== $scope.searchSource) return;
-        debugger;  
         var csv = new Blob([$scope.toCsv(true, resp.hits.hits)], { type: 'text/plain' });
         $scope.showSpinner = false;
         $scope._saveAs(csv, 'download.csv');
