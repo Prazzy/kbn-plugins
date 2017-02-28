@@ -112,7 +112,7 @@ define(function (require) {
       var searchSource = new SearchSource();
       searchSource.set('filter', searchSource.getOwn('filter'));
       searchSource.set('query', searchSource.getOwn('query'));
-      searchSource.size(10);
+      searchSource.size($scope.vis.params.rowsCount);
       searchSource.index($scope.vis.indexPattern);
       //searchSource.index($scope.searchSource.get('index'));
       searchSource.onResults().then(function onResults(searchResp) {
