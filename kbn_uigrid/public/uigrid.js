@@ -15,6 +15,8 @@ function KbnUIGridProvider(Private, config) {
         params: {
             editor: '<uigrid-vis-params></uigrid-vis-params>', // Use this HTML as an options editor for this vis
             defaults: { // Set default values for paramters (that can be configured in the editor)
+              rowsCount: 1000,
+              csvRowsCount: config.get('csv:rowsCount'),
               gridColumns: '',
               enableSorting: true,
               enableColumnResizing: true,
