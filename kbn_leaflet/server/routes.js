@@ -10,17 +10,24 @@ module.exports = function (server) {
     	let searchReq = {
     		index: req.payload.index,
     		body: {
-					query: {
-						bool: {
-					  	must: {
-					    	term: {
-					      	BeamName: req.payload.beamName
-					    	}
-					  	}
-						}
-					}
-				}
-			};
+                query: {
+                    bool: {
+                        must: [
+                        {
+                            term: {
+                                MapVersion: req.payload.mapVersion
+                            }
+                        },
+                        {
+                            prefix: {
+                                BeamName: req.payload.beamName
+                            }
+                        }
+                    ]
+                    }
+                }
+            }
+        };
 
     	call(req, 'search', searchReq)
     	.then(function (response) {
