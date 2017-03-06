@@ -231,7 +231,14 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
         markers.addLayers(markerList);
         markers.addTo(map1);
         $scope.markers = markers;
-        map1.fitBounds([[-90, -220], [90, 220]]);
+        if (markerList.length < 1) {
+          map1.fitBounds([[-90, -220], [90, 220]]);
+        } else {
+          var firstMarker = new L.LatLng(markerList[0]._latlng.lat,markerList[0]._latlng.lng);
+          var lastMarker = new L.LatLng(markerList[markerList.length-1]._latlng.lat,markerList[markerList.length-1]._latlng.lng);
+          var bounds = new L.LatLngBounds(firstMarker, lastMarker);
+          map1.fitBounds(bounds, {padding: [100, 100]});
+        }
       } else {
         _clearLayers();
         _removeMarkers();
