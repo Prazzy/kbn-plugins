@@ -203,6 +203,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
       //    .addTo(map1);
 
       let beams = '';
+      let mapVersion = '';
       if (map_type === "Marker Cluster") {
         try {
           if ($scope.map1 && $scope.markers.getLayers()) $scope.markers.clearLayers();
@@ -230,7 +231,14 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
         markers.addLayers(markerList);
         markers.addTo(map1);
         $scope.markers = markers;
-        map1.fitBounds([[-90, -220], [90, 220]]);
+        if (markerList.length < 1) {
+          map1.fitBounds([[-90, -220], [90, 220]]);
+        } else {
+          var firstMarker = new L.LatLng(markerList[0]._latlng.lat,markerList[0]._latlng.lng);
+          var lastMarker = new L.LatLng(markerList[markerList.length-1]._latlng.lat,markerList[markerList.length-1]._latlng.lng);
+          var bounds = new L.LatLngBounds(firstMarker, lastMarker);
+          map1.fitBounds(bounds, {padding: [100, 100]});
+        }
       } else {
         _clearLayers();
         _removeMarkers();
@@ -238,6 +246,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
 
         _.each(searchResp.hits.hits, function (hit, i) {
           var es_src = hit['_source'];
+          mapVersion = es_src.MapVersion;
           if (es_src.Beams) beams += es_src.Beams + ',';
           var filterField = $scope.vis.params.filterField;
           var filterValue = '';
@@ -357,7 +366,8 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
         if ($scope.vis.params.beam_enabled) {
           // get beam names
           const kmlSourceIndexName = $scope.vis.params.beam.index;
-          const beamNames = _.compact(_.uniq(beams.split(','))); 
+          const beamNames = _.compact(_.uniq(beams.split(',')));
+          beamNames = beamNames.concat(['Whitesand_Zone_V2_EE', 'Polar_Exclusion_Zone_T12V_EE', 'Guam_Restrict_Zone_EE', 'ChinaRestrictV3_EE']);
           $scope.controlLayers = L.control.layers(null, [], { collapsed: true }).addTo(map1);
           const highlightStyle = {
               weight: 2,
@@ -368,6 +378,7 @@ module.controller('KbnLeafletController', function ($scope, $element, $rootScope
           _.each(beamNames, function (beam, i) {
             let params = {
               index: kmlSourceIndexName,
+              mapVersion: mapVersion,
               beamName: beam
             };
 
