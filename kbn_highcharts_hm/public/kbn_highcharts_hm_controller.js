@@ -2,6 +2,7 @@
 // must be AMD modules (RequireJS)
 define(function (require) {
 
+    const numeral = require('numeral');
     // Create an Angular module for this plugin
     require('jquery');
     if (typeof Highcharts === "undefined") {
@@ -170,6 +171,7 @@ define(function (require) {
             var metricLabel = $scope.vis.aggs.bySchemaName['metric'][0].params.customLabel;
             if (_.isUndefined(metricLabel) || metricLabel == '') metricLabel = 'Value';
             var metricsAgg = $scope.vis.aggs.bySchemaName['metric'][0];
+            var metricFormat = metricsAgg.params.field.format._params.pattern;
             var buckets = resp.aggregations[columnAggId].buckets;
             var categories = [];
             var cells = [];
@@ -278,7 +280,7 @@ define(function (require) {
                     formatter: function () {
                         return colLabel + ': <b>' + this.series.xAxis.categories[this.point.x] + '</b><br/>' +
                             rowLabel + ': <b>' + this.series.yAxis.categories[this.point.y] + '</b><br/>' +
-                            metricLabel + ': <b>' + this.point.value + '</b>';
+                            metricLabel + ': <b>' + numeral(this.point.value).format(metricFormat) + '</b>';
                     }
                 },
                 plotOptions: {
