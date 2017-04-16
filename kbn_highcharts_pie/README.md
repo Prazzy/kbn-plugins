@@ -2,7 +2,7 @@
 Pie chart using Highcharts library. Easy to apply Highcharys options.
 
 ## Screenshots
-![screenshot](/kbn_highcharts_pie/images/pie.png?raw=true)
+![screenshot](/kbn_highcharts_pie/images/pie-k4.png?raw=true)
 
 ## Installation (Kibana 4)
 ```
