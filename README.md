@@ -19,4 +19,5 @@ cp -R build/kbn_leaflet KIBANA_FOLDER_PATH/installedPlugins/
 **Leaflet Marker Cluster:**
 ![leaflet-screenshot](/kbn_leaflet/images/marker-cluster.png?raw=true)
 
-
+**Autocomplete:**
+![leaflet-screenshot](/kbn_autocomplete/images/k4-autocomplete.png?raw=true)
