@@ -14,7 +14,7 @@ cp -R build/kbn_leaflet KIBANA_FOLDER_PATH/installedPlugins/
 
 ## Screenshots
 **Highcharts Pie:**
-![pie-screenshot](/kbn_highcharts_pie/images/pie.png?raw=true)
+![pie-screenshot](/kbn_highcharts_pie/images/pie-k4.png?raw=true)
 
 **Leaflet Marker Cluster:**
 ![leaflet-screenshot](/kbn_leaflet/images/marker-cluster.png?raw=true)
