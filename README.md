@@ -21,3 +21,6 @@ cp -R build/kbn_leaflet KIBANA_FOLDER_PATH/installedPlugins/
 
 **Autocomplete:** (https://github.com/Prazzy/kbn-plugins/tree/master/kbn_autocomplete)
 ![leaflet-screenshot](/kbn_autocomplete/images/k4-autocomplete.png?raw=true)
+
+**Highcharts Heatmap** (https://github.com/Prazzy/kbn-plugins/tree/master/kbn_highcharts_hm)
+![screenshot](/kbn_highcharts_hm/images/k4-hm.png?raw=true)
