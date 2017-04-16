@@ -13,11 +13,11 @@ cp -R build/kbn_leaflet KIBANA_FOLDER_PATH/installedPlugins/
 ```
 
 ## Screenshots
-**Highcharts Pie:**
+**Highcharts Pie:** (https://github.com/Prazzy/kbn-plugins/tree/master/kbn_highcharts_pie)
 ![pie-screenshot](/kbn_highcharts_pie/images/pie-k4.png?raw=true)
 
-**Leaflet Marker Cluster:**
+**Leaflet Marker Cluster:** (https://github.com/Prazzy/kbn-plugins/tree/master/kbn_leaflet)
 ![leaflet-screenshot](/kbn_leaflet/images/marker-cluster.png?raw=true)
 
-**Autocomplete:**
+**Autocomplete:** (https://github.com/Prazzy/kbn-plugins/tree/master/kbn_autocomplete)
 ![leaflet-screenshot](/kbn_autocomplete/images/k4-autocomplete.png?raw=true)
